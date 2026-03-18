@@ -1,0 +1,9 @@
+/target/
+/.idea/
+/.vscode/
+/HELP.md
+.DS_Store
+*.class
+*.log
+# Important: This prevents your application.yml values from leaking
+# if you decide to use a separate secret file.

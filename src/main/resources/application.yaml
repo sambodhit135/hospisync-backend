@@ -1,0 +1,64 @@
+#spring:
+#  application:
+#    name: Hospisync-backend
+#
+#  datasource:
+#    url: ${DB_URL}
+#    username: ${DB_USERNAME}
+#    password: ${DB_PASSWORD}
+#    # CHANGE THESE TWO LINES:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#
+#  jpa:
+#    # CHANGE THIS LINE:
+#    database-platform: org.hibernate.dialect.MySQLDialect
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://mysql-ab7e175-chavhansambodhit-fe75.c.aivencloud.com:11777/defaultdb?ssl-mode=REQUIRED}
+    username: ${DB_USERNAME:avnadmin}
+    # This format tells Spring: "Use environment variable DB_PASSWORD,
+    # but if it's missing, use the password string after the colon."
+    password: ${DB_PASSWORD:}
+
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+logging:
+  level:
+    org.springframework.web: INFO
+
+server:
+  port: ${PORT:10000} # Render uses 10000 by default
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:7844a6548745c154ba4a5874c154ba4a5874c154ba4a5874c154ba4a5874c154}
+    expiration-ms: 604800000
+
+  ml-service:
+    url: ${ML_SERVICE_URL:http://localhost:8000}
+
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:*} # Use * for testing, or your Render URL

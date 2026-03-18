@@ -1,0 +1,65 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< Hospital:Hospisync-backend >---------------------
+[INFO] Building Hospisync-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ Hospisync-backend ---
+[INFO] Deleting D:\Porject using antigravity\Hospisync-backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ Hospisync-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 12 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ Hospisync-backend ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 51 source files with javac [debug release 21] to target\classes
+[INFO] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/controller/SetupController.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/controller/SetupController.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[WARNING] COMPILATION WARNING : 
+[INFO] -------------------------------------------------------------
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/Notification.java:[31,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/BedCategory.java:[30,20] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/BedCategory.java:[33,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/BedCategory.java:[36,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/BedCategory.java:[39,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/BedRecord.java:[25,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/BedRecord.java:[28,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/BedRecord.java:[31,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/BedRecord.java:[34,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/model/BedRecord.java:[37,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] 10 warnings 
+[INFO] -------------------------------------------------------------
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/controller/TransfersController.java:[60,42] cannot find symbol
+  symbol:   method getTransferId()
+  location: variable updated of type hospital.Hospisync_backend.model.Transfer
+[ERROR] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/service/TransferService.java:[96,66] cannot find symbol
+  symbol:   method getTransferId()
+  location: variable saved of type hospital.Hospisync_backend.model.Transfer
+[INFO] 2 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  8.090 s
+[INFO] Finished at: 2026-03-15T13:44:23+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project Hospisync-backend: Compilation failure: Compilation failure: 
+[ERROR] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/controller/TransfersController.java:[60,42] cannot find symbol
+[ERROR]   symbol:   method getTransferId()
+[ERROR]   location: variable updated of type hospital.Hospisync_backend.model.Transfer
+[ERROR] /D:/Porject using antigravity/Hospisync-backend/src/main/java/hospital/Hospisync_backend/service/TransferService.java:[96,66] cannot find symbol
+[ERROR]   symbol:   method getTransferId()
+[ERROR]   location: variable saved of type hospital.Hospisync_backend.model.Transfer
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

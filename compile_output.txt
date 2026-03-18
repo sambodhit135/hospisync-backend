@@ -1,0 +1,33 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< Hospital:Hospisync-backend >---------------------
+[INFO] Building Hospisync-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ Hospisync-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 10 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.14.1:compile (default-compile) @ Hospisync-backend ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 38 source files with javac [debug parameters release 21] to target\classes
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/Notification.java:[30,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[25,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[28,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[31,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[34,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[37,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/Hospital.java:[43,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/Hospital.java:[46,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/Hospital.java:[49,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/Hospital.java:[52,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/Hospital.java:[55,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/service/ForecastService.java: D:\Porject using antigravity\Hospisync-backend\src\main\java\Hospital\Hospisync_backend\service\ForecastService.java uses unchecked or unsafe operations.
+[INFO] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/service/ForecastService.java: Recompile with -Xlint:unchecked for details.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.431 s
+[INFO] Finished at: 2026-03-14T11:17:16+05:30
+[INFO] ------------------------------------------------------------------------

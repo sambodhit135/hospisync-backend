@@ -1,0 +1,762 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< Hospital:Hospisync-backend >---------------------
+[INFO] Building Hospisync-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ Hospisync-backend ---
+[INFO] Deleting D:\Porject using antigravity\Hospisync-backend\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ Hospisync-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 12 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ Hospisync-backend ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 51 source files with javac [debug release 21] to target\classes
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedCategory.java:[30,20] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedCategory.java:[33,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedCategory.java:[36,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedCategory.java:[39,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/Notification.java:[31,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[25,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[28,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[31,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[34,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[WARNING] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/model/BedRecord.java:[37,21] @Builder will ignore the initializing expression entirely. If you want the initializing expression to serve as default, add @Builder.Default. If it is not supposed to be settable during building, make the field final.
+[INFO] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/controller/SetupController.java: Some input files use unchecked or unsafe operations.
+[INFO] /D:/Porject using antigravity/Hospisync-backend/src/main/java/Hospital/Hospisync_backend/controller/SetupController.java: Recompile with -Xlint:unchecked for details.
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ Hospisync-backend ---
+[INFO] skip non existing resourceDirectory D:\Porject using antigravity\Hospisync-backend\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ Hospisync-backend ---
+[INFO] Changes detected - recompiling the module! :dependency
+[INFO] Compiling 1 source file with javac [debug release 21] to target\test-classes
+[INFO] 
+[INFO] --- surefire:3.1.2:test (default-test) @ Hospisync-backend ---
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-logger-api/3.1.2/surefire-logger-api-3.1.2.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-api/3.1.2/surefire-api-3.1.2.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/maven-surefire-common/3.1.2/maven-surefire-common-3.1.2.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-extensions-api/3.1.2/surefire-extensions-api-3.1.2.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-booter/3.1.2/surefire-booter-3.1.2.jar
+Progress (1): 0.9/118 kB
+Progress (2): 0.9/118 kB | 0.9/26 kB
+Progress (2): 2.3/118 kB | 0.9/26 kB
+Progress (2): 2.3/118 kB | 2.3/26 kB
+Progress (2): 2.3/118 kB | 3.6/26 kB
+Progress (2): 3.6/118 kB | 3.6/26 kB
+Progress (2): 5.0/118 kB | 3.6/26 kB
+Progress (2): 5.0/118 kB | 5.0/26 kB
+Progress (2): 6.4/118 kB | 5.0/26 kB
+Progress (2): 6.4/118 kB | 6.4/26 kB
+Progress (2): 7.7/118 kB | 6.4/26 kB
+Progress (2): 7.7/118 kB | 7.7/26 kB
+Progress (2): 9.1/118 kB | 7.7/26 kB
+Progress (2): 9.1/118 kB | 9.1/26 kB
+Progress (2): 10/118 kB | 9.1/26 kB 
+Progress (2): 10/118 kB | 10/26 kB 
+Progress (2): 12/118 kB | 10/26 kB
+Progress (2): 12/118 kB | 12/26 kB
+Progress (2): 13/118 kB | 12/26 kB
+Progress (2): 13/118 kB | 13/26 kB
+Progress (2): 15/118 kB | 13/26 kB
+Progress (2): 15/118 kB | 15/26 kB
+Progress (2): 16/118 kB | 15/26 kB
+Progress (2): 16/118 kB | 16/26 kB
+Progress (2): 17/118 kB | 16/26 kB
+Progress (2): 17/118 kB | 17/26 kB
+Progress (2): 19/118 kB | 17/26 kB
+Progress (2): 19/118 kB | 18/26 kB
+Progress (2): 19/118 kB | 20/26 kB
+Progress (2): 20/118 kB | 20/26 kB
+Progress (2): 20/118 kB | 21/26 kB
+Progress (2): 21/118 kB | 21/26 kB
+Progress (2): 21/118 kB | 23/26 kB
+Progress (2): 21/118 kB | 24/26 kB
+Progress (2): 23/118 kB | 24/26 kB
+Progress (2): 23/118 kB | 25/26 kB
+Progress (2): 24/118 kB | 25/26 kB
+Progress (2): 24/118 kB | 26 kB   
+Progress (2): 26/118 kB | 26 kB
+Progress (2): 27/118 kB | 26 kB
+Progress (2): 28/118 kB | 26 kB
+Progress (2): 30/118 kB | 26 kB
+Progress (2): 31/118 kB | 26 kB
+Progress (2): 32/118 kB | 26 kB
+Progress (2): 33/118 kB | 26 kB
+Progress (2): 35/118 kB | 26 kB
+Progress (2): 36/118 kB | 26 kB
+Progress (2): 37/118 kB | 26 kB
+Progress (2): 39/118 kB | 26 kB
+Progress (2): 40/118 kB | 26 kB
+Progress (2): 42/118 kB | 26 kB
+Progress (2): 43/118 kB | 26 kB
+Progress (2): 44/118 kB | 26 kB
+Progress (2): 46/118 kB | 26 kB
+Progress (2): 47/118 kB | 26 kB
+Progress (2): 48/118 kB | 26 kB
+Progress (2): 50/118 kB | 26 kB
+Progress (2): 51/118 kB | 26 kB
+Progress (2): 53/118 kB | 26 kB
+Progress (2): 54/118 kB | 26 kB
+Progress (2): 55/118 kB | 26 kB
+Progress (2): 60/118 kB | 26 kB
+Progress (2): 64/118 kB | 26 kB
+Progress (2): 68/118 kB | 26 kB
+Progress (2): 72/118 kB | 26 kB
+Progress (2): 76/118 kB | 26 kB
+                               
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-extensions-api/3.1.2/surefire-extensions-api-3.1.2.jar (26 kB at 36 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-extensions-spi/3.1.2/surefire-extensions-spi-3.1.2.jar
+Progress (1): 81/118 kB
+Progress (1): 85/118 kB
+Progress (1): 89/118 kB
+Progress (1): 93/118 kB
+Progress (1): 98/118 kB
+Progress (1): 102/118 kB
+Progress (1): 106/118 kB
+Progress (1): 110/118 kB
+Progress (1): 114/118 kB
+Progress (1): 118 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-booter/3.1.2/surefire-booter-3.1.2.jar (118 kB at 158 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-common-artifact-filters/3.1.1/maven-common-artifact-filters-3.1.1.jar
+Progress (1): 0.9/8.2 kB
+Progress (1): 2.3/8.2 kB
+Progress (1): 3.6/8.2 kB
+Progress (1): 5.0/8.2 kB
+Progress (1): 6.4/8.2 kB
+Progress (1): 7.5/8.2 kB
+Progress (1): 8.2 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-extensions-spi/3.1.2/surefire-extensions-spi-3.1.2.jar (8.2 kB at 11 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/commons-io/commons-io/2.12.0/commons-io-2.12.0.jar
+Progress (1): 3.8/61 kB
+Progress (1): 8.0/61 kB
+Progress (1): 12/61 kB 
+Progress (1): 16/61 kB
+Progress (1): 21/61 kB
+Progress (1): 25/61 kB
+Progress (1): 29/61 kB
+Progress (1): 33/61 kB
+Progress (1): 37/61 kB
+Progress (1): 41/61 kB
+Progress (1): 46/61 kB
+Progress (1): 50/61 kB
+Progress (1): 54/61 kB
+Progress (1): 58/61 kB
+Progress (1): 61 kB   
+                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/shared/maven-common-artifact-filters/3.1.1/maven-common-artifact-filters-3.1.1.jar (61 kB at 77 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-shared-utils/3.1.2/surefire-shared-utils-3.1.2.jar
+Progress (1): 0.9/474 kB
+Progress (1): 2.3/474 kB
+Progress (1): 3.6/474 kB
+Progress (1): 5.0/474 kB
+Progress (1): 6.4/474 kB
+Progress (1): 7.7/474 kB
+Progress (1): 9.1/474 kB
+Progress (1): 10/474 kB 
+Progress (1): 12/474 kB
+Progress (1): 13/474 kB
+Progress (1): 15/474 kB
+Progress (1): 16/474 kB
+Progress (1): 17/474 kB
+Progress (1): 19/474 kB
+Progress (1): 23/474 kB
+Progress (1): 27/474 kB
+Progress (1): 28/474 kB
+Progress (1): 32/474 kB
+Progress (1): 36/474 kB
+Progress (1): 41/474 kB
+Progress (2): 41/474 kB | 0/2.3 MB
+Progress (2): 45/474 kB | 0/2.3 MB
+Progress (2): 49/474 kB | 0/2.3 MB
+Progress (2): 49/474 kB | 0/2.3 MB
+Progress (2): 53/474 kB | 0/2.3 MB
+Progress (2): 58/474 kB | 0/2.3 MB
+Progress (2): 58/474 kB | 0/2.3 MB
+Progress (2): 58/474 kB | 0/2.3 MB
+Progress (2): 62/474 kB | 0/2.3 MB
+Progress (2): 62/474 kB | 0/2.3 MB
+Progress (2): 66/474 kB | 0/2.3 MB
+Progress (2): 66/474 kB | 0/2.3 MB
+Progress (2): 66/474 kB | 0/2.3 MB
+Progress (2): 70/474 kB | 0/2.3 MB
+Progress (2): 70/474 kB | 0/2.3 MB
+Progress (2): 74/474 kB | 0/2.3 MB
+Progress (2): 74/474 kB | 0/2.3 MB
+Progress (2): 79/474 kB | 0/2.3 MB
+Progress (2): 79/474 kB | 0/2.3 MB
+Progress (2): 83/474 kB | 0/2.3 MB
+Progress (2): 87/474 kB | 0/2.3 MB
+Progress (2): 91/474 kB | 0/2.3 MB
+Progress (2): 96/474 kB | 0/2.3 MB
+Progress (2): 96/474 kB | 0.1/2.3 MB
+Progress (2): 100/474 kB | 0.1/2.3 MB
+Progress (2): 104/474 kB | 0.1/2.3 MB
+Progress (2): 108/474 kB | 0.1/2.3 MB
+Progress (2): 112/474 kB | 0.1/2.3 MB
+Progress (2): 112/474 kB | 0.1/2.3 MB
+Progress (2): 117/474 kB | 0.1/2.3 MB
+Progress (2): 121/474 kB | 0.1/2.3 MB
+Progress (2): 121/474 kB | 0.1/2.3 MB
+Progress (2): 125/474 kB | 0.1/2.3 MB
+Progress (2): 129/474 kB | 0.1/2.3 MB
+Progress (2): 129/474 kB | 0.1/2.3 MB
+Progress (2): 134/474 kB | 0.1/2.3 MB
+Progress (2): 138/474 kB | 0.1/2.3 MB
+Progress (2): 138/474 kB | 0.1/2.3 MB
+Progress (2): 142/474 kB | 0.1/2.3 MB
+Progress (2): 146/474 kB | 0.1/2.3 MB
+Progress (2): 151/474 kB | 0.1/2.3 MB
+Progress (2): 151/474 kB | 0.1/2.3 MB
+Progress (2): 155/474 kB | 0.1/2.3 MB
+Progress (2): 159/474 kB | 0.1/2.3 MB
+Progress (2): 159/474 kB | 0.1/2.3 MB
+Progress (2): 163/474 kB | 0.1/2.3 MB
+Progress (2): 167/474 kB | 0.1/2.3 MB
+Progress (2): 172/474 kB | 0.1/2.3 MB
+Progress (2): 172/474 kB | 0.2/2.3 MB
+Progress (2): 176/474 kB | 0.2/2.3 MB
+Progress (2): 180/474 kB | 0.2/2.3 MB
+Progress (2): 184/474 kB | 0.2/2.3 MB
+Progress (2): 184/474 kB | 0.2/2.3 MB
+Progress (2): 184/474 kB | 0.2/2.3 MB
+Progress (2): 201/474 kB | 0.2/2.3 MB
+Progress (2): 201/474 kB | 0.2/2.3 MB
+Progress (2): 217/474 kB | 0.2/2.3 MB
+Progress (2): 217/474 kB | 0.2/2.3 MB
+Progress (2): 234/474 kB | 0.2/2.3 MB
+Progress (2): 234/474 kB | 0.2/2.3 MB
+Progress (2): 234/474 kB | 0.3/2.3 MB
+Progress (2): 250/474 kB | 0.3/2.3 MB
+Progress (2): 266/474 kB | 0.3/2.3 MB
+Progress (2): 266/474 kB | 0.3/2.3 MB
+Progress (2): 283/474 kB | 0.3/2.3 MB
+Progress (2): 290/474 kB | 0.3/2.3 MB
+Progress (2): 290/474 kB | 0.3/2.3 MB
+Progress (2): 306/474 kB | 0.3/2.3 MB
+Progress (2): 306/474 kB | 0.3/2.3 MB
+Progress (2): 323/474 kB | 0.3/2.3 MB
+Progress (2): 323/474 kB | 0.3/2.3 MB
+Progress (2): 339/474 kB | 0.3/2.3 MB
+Progress (2): 339/474 kB | 0.3/2.3 MB
+Progress (2): 356/474 kB | 0.3/2.3 MB
+Progress (2): 356/474 kB | 0.4/2.3 MB
+Progress (2): 372/474 kB | 0.4/2.3 MB
+Progress (2): 372/474 kB | 0.4/2.3 MB
+Progress (2): 388/474 kB | 0.4/2.3 MB
+Progress (2): 388/474 kB | 0.4/2.3 MB
+Progress (2): 405/474 kB | 0.4/2.3 MB
+Progress (2): 405/474 kB | 0.4/2.3 MB
+Progress (2): 421/474 kB | 0.4/2.3 MB
+Progress (2): 421/474 kB | 0.4/2.3 MB
+Progress (2): 438/474 kB | 0.4/2.3 MB
+Progress (2): 438/474 kB | 0.4/2.3 MB
+Progress (2): 454/474 kB | 0.4/2.3 MB
+Progress (2): 454/474 kB | 0.5/2.3 MB
+Progress (2): 470/474 kB | 0.5/2.3 MB
+Progress (2): 474 kB | 0.5/2.3 MB    
+Progress (2): 474 kB | 0.5/2.3 MB
+Progress (2): 474 kB | 0.5/2.3 MB
+Progress (2): 474 kB | 0.5/2.3 MB
+Progress (2): 474 kB | 0.5/2.3 MB
+Progress (2): 474 kB | 0.5/2.3 MB
+Progress (2): 474 kB | 0.6/2.3 MB
+Progress (2): 474 kB | 0.6/2.3 MB
+Progress (2): 474 kB | 0.6/2.3 MB
+Progress (2): 474 kB | 0.6/2.3 MB
+Progress (2): 474 kB | 0.6/2.3 MB
+                                 
+Downloaded from central: https://repo.maven.apache.org/maven2/commons-io/commons-io/2.12.0/commons-io-2.12.0.jar (474 kB at 506 kB/s)
+Progress (1): 0.6/2.3 MB
+Progress (1): 0.7/2.3 MB
+Progress (1): 0.7/2.3 MB
+Progress (1): 0.7/2.3 MB
+Progress (1): 0.7/2.3 MB
+Progress (1): 0.7/2.3 MB
+Progress (1): 0.7/2.3 MB
+Progress (1): 0.7/2.3 MB
+Progress (1): 0.8/2.3 MB
+Progress (1): 0.8/2.3 MB
+Progress (1): 0.8/2.3 MB
+Progress (1): 0.8/2.3 MB
+Progress (1): 0.8/2.3 MB
+Progress (1): 0.8/2.3 MB
+Progress (1): 0.9/2.3 MB
+Progress (1): 0.9/2.3 MB
+Progress (1): 0.9/2.3 MB
+Progress (1): 0.9/2.3 MB
+Progress (1): 0.9/2.3 MB
+Progress (1): 0.9/2.3 MB
+Progress (1): 1.0/2.3 MB
+Progress (1): 1.0/2.3 MB
+Progress (1): 1.0/2.3 MB
+Progress (1): 1.0/2.3 MB
+Progress (1): 1.0/2.3 MB
+Progress (1): 1.0/2.3 MB
+Progress (1): 1.0/2.3 MB
+Progress (1): 1.1/2.3 MB
+Progress (1): 1.1/2.3 MB
+Progress (1): 1.1/2.3 MB
+Progress (1): 1.1/2.3 MB
+Progress (1): 1.1/2.3 MB
+Progress (1): 1.1/2.3 MB
+Progress (1): 1.2/2.3 MB
+Progress (1): 1.2/2.3 MB
+Progress (1): 1.2/2.3 MB
+Progress (1): 1.2/2.3 MB
+Progress (1): 1.2/2.3 MB
+Progress (1): 1.2/2.3 MB
+Progress (1): 1.3/2.3 MB
+Progress (1): 1.3/2.3 MB
+Progress (1): 1.3/2.3 MB
+Progress (1): 1.3/2.3 MB
+Progress (1): 1.3/2.3 MB
+Progress (1): 1.3/2.3 MB
+Progress (1): 1.3/2.3 MB
+Progress (1): 1.4/2.3 MB
+Progress (1): 1.4/2.3 MB
+Progress (1): 1.4/2.3 MB
+Progress (1): 1.4/2.3 MB
+Progress (1): 1.4/2.3 MB
+Progress (1): 1.4/2.3 MB
+Progress (1): 1.5/2.3 MB
+Progress (1): 1.5/2.3 MB
+Progress (1): 1.5/2.3 MB
+Progress (1): 1.5/2.3 MB
+Progress (1): 1.5/2.3 MB
+Progress (1): 1.5/2.3 MB
+Progress (1): 1.6/2.3 MB
+Progress (1): 1.6/2.3 MB
+Progress (1): 1.6/2.3 MB
+Progress (1): 1.6/2.3 MB
+Progress (1): 1.6/2.3 MB
+Progress (1): 1.6/2.3 MB
+Progress (1): 1.6/2.3 MB
+Progress (1): 1.6/2.3 MB
+Progress (1): 1.7/2.3 MB
+Progress (1): 1.7/2.3 MB
+Progress (1): 1.7/2.3 MB
+Progress (1): 1.7/2.3 MB
+Progress (1): 1.7/2.3 MB
+Progress (1): 1.7/2.3 MB
+Progress (1): 1.8/2.3 MB
+Progress (1): 1.8/2.3 MB
+Progress (1): 1.8/2.3 MB
+Progress (1): 1.8/2.3 MB
+Progress (1): 1.8/2.3 MB
+Progress (1): 1.8/2.3 MB
+Progress (1): 1.9/2.3 MB
+Progress (1): 1.9/2.3 MB
+Progress (1): 1.9/2.3 MB
+Progress (1): 1.9/2.3 MB
+Progress (1): 1.9/2.3 MB
+Progress (1): 1.9/2.3 MB
+Progress (1): 2.0/2.3 MB
+Progress (1): 2.0/2.3 MB
+Progress (1): 2.0/2.3 MB
+Progress (1): 2.0/2.3 MB
+Progress (1): 2.0/2.3 MB
+Progress (1): 2.0/2.3 MB
+Progress (1): 2.1/2.3 MB
+Progress (1): 2.1/2.3 MB
+Progress (1): 2.1/2.3 MB
+Progress (1): 2.1/2.3 MB
+Progress (1): 2.1/2.3 MB
+Progress (1): 2.1/2.3 MB
+Progress (1): 2.2/2.3 MB
+Progress (1): 2.2/2.3 MB
+Progress (1): 2.2/2.3 MB
+Progress (1): 2.2/2.3 MB
+Progress (1): 2.2/2.3 MB
+Progress (1): 2.2/2.3 MB
+Progress (1): 2.3/2.3 MB
+Progress (1): 2.3/2.3 MB
+Progress (1): 2.3/2.3 MB
+Progress (1): 2.3/2.3 MB
+Progress (1): 2.3/2.3 MB
+Progress (1): 2.3/2.3 MB
+Progress (1): 2.3 MB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-shared-utils/3.1.2/surefire-shared-utils-3.1.2.jar (2.3 MB at 2.2 MB/s)
+Progress (1): 0.9/306 kB
+Progress (1): 2.3/306 kB
+Progress (1): 3.6/306 kB
+Progress (1): 5.0/306 kB
+Progress (1): 6.4/306 kB
+Progress (1): 7.7/306 kB
+Progress (1): 9.1/306 kB
+Progress (1): 10/306 kB 
+Progress (1): 12/306 kB
+Progress (1): 13/306 kB
+Progress (1): 15/306 kB
+Progress (1): 16/306 kB
+Progress (1): 17/306 kB
+Progress (1): 19/306 kB
+Progress (1): 20/306 kB
+Progress (1): 21/306 kB
+Progress (1): 23/306 kB
+Progress (1): 24/306 kB
+Progress (1): 26/306 kB
+Progress (1): 27/306 kB
+Progress (1): 28/306 kB
+Progress (1): 29/306 kB
+Progress (1): 31/306 kB
+Progress (1): 32/306 kB
+Progress (1): 33/306 kB
+Progress (1): 35/306 kB
+Progress (1): 36/306 kB
+Progress (1): 38/306 kB
+Progress (1): 39/306 kB
+Progress (1): 40/306 kB
+Progress (1): 42/306 kB
+Progress (1): 43/306 kB
+Progress (1): 44/306 kB
+Progress (1): 46/306 kB
+Progress (1): 47/306 kB
+Progress (1): 48/306 kB
+Progress (1): 50/306 kB
+Progress (1): 51/306 kB
+Progress (1): 53/306 kB
+Progress (1): 54/306 kB
+Progress (1): 55/306 kB
+Progress (1): 60/306 kB
+Progress (2): 60/306 kB | 0.9/14 kB
+Progress (2): 60/306 kB | 2.3/14 kB
+Progress (2): 60/306 kB | 3.6/14 kB
+Progress (2): 64/306 kB | 3.6/14 kB
+Progress (2): 68/306 kB | 3.6/14 kB
+Progress (2): 68/306 kB | 5.0/14 kB
+Progress (2): 72/306 kB | 5.0/14 kB
+Progress (2): 72/306 kB | 6.4/14 kB
+Progress (2): 76/306 kB | 6.4/14 kB
+Progress (2): 76/306 kB | 7.7/14 kB
+Progress (2): 81/306 kB | 7.7/14 kB
+Progress (2): 81/306 kB | 9.1/14 kB
+Progress (2): 85/306 kB | 9.1/14 kB
+Progress (2): 85/306 kB | 10/14 kB 
+Progress (2): 85/306 kB | 12/14 kB
+Progress (2): 89/306 kB | 12/14 kB
+Progress (2): 89/306 kB | 13/14 kB
+Progress (2): 93/306 kB | 13/14 kB
+Progress (2): 93/306 kB | 14 kB   
+Progress (2): 98/306 kB | 14 kB
+Progress (2): 102/306 kB | 14 kB
+Progress (2): 106/306 kB | 14 kB
+                                
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-logger-api/3.1.2/surefire-logger-api-3.1.2.jar (14 kB at 10 kB/s)
+Progress (1): 110/306 kB
+Progress (1): 115/306 kB
+Progress (1): 119/306 kB
+Progress (1): 123/306 kB
+Progress (1): 127/306 kB
+Progress (1): 131/306 kB
+Progress (1): 136/306 kB
+Progress (1): 140/306 kB
+Progress (1): 144/306 kB
+Progress (1): 148/306 kB
+Progress (1): 153/306 kB
+Progress (1): 157/306 kB
+Progress (1): 159/306 kB
+Progress (1): 163/306 kB
+Progress (1): 167/306 kB
+Progress (1): 172/306 kB
+Progress (1): 176/306 kB
+Progress (1): 180/306 kB
+Progress (1): 184/306 kB
+Progress (1): 189/306 kB
+Progress (1): 193/306 kB
+Progress (1): 197/306 kB
+Progress (1): 201/306 kB
+Progress (1): 206/306 kB
+Progress (1): 210/306 kB
+Progress (1): 214/306 kB
+Progress (1): 218/306 kB
+Progress (1): 222/306 kB
+Progress (1): 239/306 kB
+Progress (1): 255/306 kB
+Progress (1): 272/306 kB
+Progress (1): 288/306 kB
+Progress (1): 290/306 kB
+Progress (1): 306 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/maven-surefire-common/3.1.2/maven-surefire-common-3.1.2.jar (306 kB at 216 kB/s)
+Progress (1): 0.9/171 kB
+Progress (1): 2.3/171 kB
+Progress (1): 3.6/171 kB
+Progress (1): 5.0/171 kB
+Progress (1): 6.4/171 kB
+Progress (1): 7.7/171 kB
+Progress (1): 9.1/171 kB
+Progress (1): 10/171 kB 
+Progress (1): 12/171 kB
+Progress (1): 13/171 kB
+Progress (1): 15/171 kB
+Progress (1): 16/171 kB
+Progress (1): 17/171 kB
+Progress (1): 18/171 kB
+Progress (1): 20/171 kB
+Progress (1): 21/171 kB
+Progress (1): 23/171 kB
+Progress (1): 24/171 kB
+Progress (1): 25/171 kB
+Progress (1): 27/171 kB
+Progress (1): 28/171 kB
+Progress (1): 29/171 kB
+Progress (1): 31/171 kB
+Progress (1): 32/171 kB
+Progress (1): 33/171 kB
+Progress (1): 35/171 kB
+Progress (1): 36/171 kB
+Progress (1): 38/171 kB
+Progress (1): 39/171 kB
+Progress (1): 40/171 kB
+Progress (1): 42/171 kB
+Progress (1): 43/171 kB
+Progress (1): 44/171 kB
+Progress (1): 46/171 kB
+Progress (1): 47/171 kB
+Progress (1): 49/171 kB
+Progress (1): 50/171 kB
+Progress (1): 51/171 kB
+Progress (1): 53/171 kB
+Progress (1): 54/171 kB
+Progress (1): 55/171 kB
+Progress (1): 60/171 kB
+Progress (1): 64/171 kB
+Progress (1): 68/171 kB
+Progress (1): 72/171 kB
+Progress (1): 77/171 kB
+Progress (1): 81/171 kB
+Progress (1): 85/171 kB
+Progress (1): 89/171 kB
+Progress (1): 93/171 kB
+Progress (1): 98/171 kB
+Progress (1): 102/171 kB
+Progress (1): 106/171 kB
+Progress (1): 110/171 kB
+Progress (1): 115/171 kB
+Progress (1): 119/171 kB
+Progress (1): 123/171 kB
+Progress (1): 127/171 kB
+Progress (1): 131/171 kB
+Progress (1): 136/171 kB
+Progress (1): 140/171 kB
+Progress (1): 144/171 kB
+Progress (1): 147/171 kB
+Progress (1): 151/171 kB
+Progress (1): 155/171 kB
+Progress (1): 159/171 kB
+Progress (1): 164/171 kB
+Progress (1): 168/171 kB
+Progress (1): 171 kB    
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/surefire/surefire-api/3.1.2/surefire-api-3.1.2.jar (171 kB at 68 kB/s)
+[INFO] Tests are skipped.
+[INFO] 
+[INFO] --- jar:3.3.0:jar (default-jar) @ Hospisync-backend ---
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/maven/maven-archiver/3.6.0/maven-archiver-3.6.0.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-io/3.4.0/plexus-io-3.4.0.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-archiver/4.4.0/plexus-archiver-4.4.0.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar
+Downloading from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.4.2/plexus-utils-3.4.2.jar
+Progress (1): 0/1.0 MB
+Progress (1): 0/1.0 MB
+Progress (1): 0/1.0 MB
+Progress (1): 0.1/1.0 MB
+Progress (1): 0.1/1.0 MB
+Progress (1): 0.1/1.0 MB
+Progress (1): 0.1/1.0 MB
+Progress (1): 0.1/1.0 MB
+Progress (1): 0.1/1.0 MB
+Progress (1): 0.1/1.0 MB
+Progress (1): 0.2/1.0 MB
+Progress (2): 0.2/1.0 MB | 3.8/79 kB
+Progress (2): 0.2/1.0 MB | 7.7/79 kB
+Progress (2): 0.2/1.0 MB | 7.7/79 kB
+Progress (2): 0.2/1.0 MB | 12/79 kB 
+Progress (2): 0.2/1.0 MB | 12/79 kB
+Progress (2): 0.2/1.0 MB | 16/79 kB
+Progress (2): 0.2/1.0 MB | 16/79 kB
+Progress (2): 0.2/1.0 MB | 16/79 kB
+Progress (2): 0.2/1.0 MB | 16/79 kB
+Progress (2): 0.3/1.0 MB | 16/79 kB
+Progress (2): 0.3/1.0 MB | 20/79 kB
+Progress (2): 0.3/1.0 MB | 25/79 kB
+Progress (2): 0.3/1.0 MB | 29/79 kB
+Progress (3): 0.3/1.0 MB | 29/79 kB | 0.9/267 kB
+Progress (3): 0.3/1.0 MB | 29/79 kB | 2.3/267 kB
+Progress (3): 0.3/1.0 MB | 29/79 kB | 3.6/267 kB
+Progress (3): 0.3/1.0 MB | 29/79 kB | 5.0/267 kB
+Progress (3): 0.3/1.0 MB | 29/79 kB | 6.4/267 kB
+Progress (3): 0.3/1.0 MB | 29/79 kB | 7.7/267 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 7.7/267 kB | 7.7/26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 7.7/267 kB | 16/26 kB 
+Progress (4): 0.3/1.0 MB | 29/79 kB | 9.1/267 kB | 16/26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 9.1/267 kB | 26 kB   
+Progress (4): 0.3/1.0 MB | 29/79 kB | 10/267 kB | 26 kB 
+Progress (4): 0.3/1.0 MB | 29/79 kB | 12/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 13/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 15/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 16/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 17/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 18/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 20/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 21/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 23/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 24/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 25/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 27/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 28/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 29/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 31/267 kB | 26 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 32/267 kB | 26 kB
+Progress (5): 0.3/1.0 MB | 29/79 kB | 32/267 kB | 26 kB | 7.7/211 kB
+Progress (5): 0.3/1.0 MB | 29/79 kB | 33/267 kB | 26 kB | 7.7/211 kB
+Progress (5): 0.3/1.0 MB | 29/79 kB | 33/267 kB | 26 kB | 12/211 kB 
+Progress (5): 0.3/1.0 MB | 29/79 kB | 35/267 kB | 26 kB | 12/211 kB
+                                                                   
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/maven/maven-archiver/3.6.0/maven-archiver-3.6.0.jar (26 kB at 386 kB/s)
+Progress (4): 0.3/1.0 MB | 29/79 kB | 36/267 kB | 12/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 36/267 kB | 29/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 36/267 kB | 45/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 38/267 kB | 45/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 39/267 kB | 45/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 40/267 kB | 45/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 45/267 kB | 45/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 49/267 kB | 45/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 49/267 kB | 61/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 49/267 kB | 78/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 53/267 kB | 78/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 57/267 kB | 78/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 78/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 94/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 111/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 127/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 143/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 160/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 176/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 193/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 209/211 kB
+Progress (4): 0.3/1.0 MB | 29/79 kB | 61/267 kB | 211 kB    
+                                                        
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-archiver/4.4.0/plexus-archiver-4.4.0.jar (211 kB at 2.3 MB/s)
+Progress (3): 0.3/1.0 MB | 29/79 kB | 61/267 kB
+Progress (3): 0.3/1.0 MB | 29/79 kB | 66/267 kB
+Progress (3): 0.3/1.0 MB | 33/79 kB | 66/267 kB
+Progress (3): 0.3/1.0 MB | 33/79 kB | 70/267 kB
+Progress (3): 0.3/1.0 MB | 37/79 kB | 70/267 kB
+Progress (3): 0.3/1.0 MB | 37/79 kB | 74/267 kB
+Progress (3): 0.3/1.0 MB | 37/79 kB | 74/267 kB
+Progress (3): 0.3/1.0 MB | 42/79 kB | 74/267 kB
+Progress (3): 0.3/1.0 MB | 42/79 kB | 78/267 kB
+Progress (3): 0.3/1.0 MB | 46/79 kB | 78/267 kB
+Progress (3): 0.3/1.0 MB | 50/79 kB | 78/267 kB
+Progress (3): 0.3/1.0 MB | 50/79 kB | 83/267 kB
+Progress (3): 0.3/1.0 MB | 50/79 kB | 83/267 kB
+Progress (3): 0.3/1.0 MB | 50/79 kB | 87/267 kB
+Progress (3): 0.3/1.0 MB | 50/79 kB | 91/267 kB
+Progress (3): 0.3/1.0 MB | 50/79 kB | 95/267 kB
+Progress (3): 0.3/1.0 MB | 66/79 kB | 95/267 kB
+Progress (3): 0.3/1.0 MB | 66/79 kB | 95/267 kB
+Progress (3): 0.3/1.0 MB | 79 kB | 95/267 kB   
+Progress (3): 0.3/1.0 MB | 79 kB | 95/267 kB
+Progress (3): 0.3/1.0 MB | 79 kB | 95/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 95/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 95/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 100/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 104/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 108/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 112/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 116/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 121/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 125/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 129/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 133/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 138/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 142/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 142/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 142/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 142/267 kB
+Progress (3): 0.4/1.0 MB | 79 kB | 142/267 kB
+                                             
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-io/3.4.0/plexus-io-3.4.0.jar (79 kB at 684 kB/s)
+Progress (2): 0.5/1.0 MB | 142/267 kB
+Progress (2): 0.5/1.0 MB | 142/267 kB
+Progress (2): 0.5/1.0 MB | 142/267 kB
+Progress (2): 0.5/1.0 MB | 142/267 kB
+Progress (2): 0.5/1.0 MB | 142/267 kB
+Progress (2): 0.5/1.0 MB | 142/267 kB
+Progress (2): 0.6/1.0 MB | 142/267 kB
+Progress (2): 0.6/1.0 MB | 146/267 kB
+Progress (2): 0.6/1.0 MB | 146/267 kB
+Progress (2): 0.6/1.0 MB | 147/267 kB
+Progress (2): 0.6/1.0 MB | 151/267 kB
+Progress (2): 0.6/1.0 MB | 151/267 kB
+Progress (2): 0.6/1.0 MB | 155/267 kB
+Progress (2): 0.6/1.0 MB | 159/267 kB
+Progress (2): 0.6/1.0 MB | 159/267 kB
+Progress (2): 0.6/1.0 MB | 159/267 kB
+Progress (2): 0.6/1.0 MB | 159/267 kB
+Progress (2): 0.7/1.0 MB | 159/267 kB
+Progress (2): 0.7/1.0 MB | 159/267 kB
+Progress (2): 0.7/1.0 MB | 159/267 kB
+Progress (2): 0.7/1.0 MB | 159/267 kB
+Progress (2): 0.7/1.0 MB | 164/267 kB
+Progress (2): 0.7/1.0 MB | 164/267 kB
+Progress (2): 0.7/1.0 MB | 168/267 kB
+Progress (2): 0.7/1.0 MB | 172/267 kB
+Progress (2): 0.7/1.0 MB | 176/267 kB
+Progress (2): 0.7/1.0 MB | 181/267 kB
+Progress (2): 0.7/1.0 MB | 181/267 kB
+Progress (2): 0.7/1.0 MB | 185/267 kB
+Progress (2): 0.7/1.0 MB | 189/267 kB
+Progress (2): 0.7/1.0 MB | 193/267 kB
+Progress (2): 0.8/1.0 MB | 193/267 kB
+Progress (2): 0.8/1.0 MB | 197/267 kB
+Progress (2): 0.8/1.0 MB | 202/267 kB
+Progress (2): 0.8/1.0 MB | 206/267 kB
+Progress (2): 0.8/1.0 MB | 206/267 kB
+Progress (2): 0.8/1.0 MB | 206/267 kB
+Progress (2): 0.8/1.0 MB | 206/267 kB
+Progress (2): 0.8/1.0 MB | 206/267 kB
+Progress (2): 0.8/1.0 MB | 222/267 kB
+Progress (2): 0.8/1.0 MB | 222/267 kB
+Progress (2): 0.8/1.0 MB | 239/267 kB
+Progress (2): 0.9/1.0 MB | 239/267 kB
+Progress (2): 0.9/1.0 MB | 255/267 kB
+Progress (2): 0.9/1.0 MB | 255/267 kB
+Progress (2): 0.9/1.0 MB | 255/267 kB
+Progress (2): 0.9/1.0 MB | 255/267 kB
+Progress (2): 0.9/1.0 MB | 255/267 kB
+Progress (2): 0.9/1.0 MB | 255/267 kB
+Progress (2): 1.0/1.0 MB | 255/267 kB
+Progress (2): 1.0/1.0 MB | 255/267 kB
+Progress (2): 1.0/1.0 MB | 255/267 kB
+Progress (2): 1.0/1.0 MB | 255/267 kB
+Progress (2): 1.0/1.0 MB | 255/267 kB
+Progress (2): 1.0 MB | 255/267 kB    
+                                 
+Downloaded from central: https://repo.maven.apache.org/maven2/org/apache/commons/commons-compress/1.21/commons-compress-1.21.jar (1.0 MB at 6.7 MB/s)
+Progress (1): 267 kB
+                    
+Downloaded from central: https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.4.2/plexus-utils-3.4.2.jar (267 kB at 1.5 MB/s)
+[INFO] Building jar: D:\Porject using antigravity\Hospisync-backend\target\Hospisync-backend-0.0.1-SNAPSHOT.jar
+[INFO] 
+[INFO] --- spring-boot:3.2.1:repackage (repackage) @ Hospisync-backend ---
+[INFO] Replacing main artifact D:\Porject using antigravity\Hospisync-backend\target\Hospisync-backend-0.0.1-SNAPSHOT.jar with repackaged archive, adding nested dependencies in BOOT-INF/.
+[INFO] The original artifact has been renamed to D:\Porject using antigravity\Hospisync-backend\target\Hospisync-backend-0.0.1-SNAPSHOT.jar.original
+[INFO] 
+[INFO] --- install:3.1.1:install (default-install) @ Hospisync-backend ---
+[INFO] Installing D:\Porject using antigravity\Hospisync-backend\pom.xml to C:\Users\ASUS\.m2\repository\Hospital\Hospisync-backend\0.0.1-SNAPSHOT\Hospisync-backend-0.0.1-SNAPSHOT.pom
+[INFO] Installing D:\Porject using antigravity\Hospisync-backend\target\Hospisync-backend-0.0.1-SNAPSHOT.jar to C:\Users\ASUS\.m2\repository\Hospital\Hospisync-backend\0.0.1-SNAPSHOT\Hospisync-backend-0.0.1-SNAPSHOT.jar
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  15.372 s
+[INFO] Finished at: 2026-03-15T13:40:57+05:30
+[INFO] ------------------------------------------------------------------------
