@@ -1,0 +1,4 @@
+Hospitals in DB:
+ID: 1 Name: Nagpuur Government Hospital Lat: 21.127408 Lon: 79.0972
+ID: 2 Name: City Genral Hospital Lat: 21.093572 Lon: 78.973984
+ID: 3 Name: Hingna District Hospital Lat: 21.469803 Lon: 78.97912

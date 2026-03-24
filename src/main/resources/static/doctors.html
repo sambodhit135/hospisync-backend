@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>HospiSync – Doctor Management</title>
+    <meta name="description" content="Manage hospital doctors, specialities, and workload safely.">
+    
+    <!-- Design System: Clinical Precision -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#004ac6",
+                        "primary-container": "#1b4f9b",
+                        "secondary": "#1E3A5F",
+                        "background": "#f2f4f6",
+                        "surface": "#ffffff",
+                        "error": "#ba1a1a",
+                        "success": "#22c55e",
+                        "warning": "#f59e0b",
+                        "on-surface-variant": "#434751"
+                    },
+                    fontFamily: {
+                        "headline": ["Plus Jakarta Sans", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "12px", "lg": "12px", "xl": "1rem", "full": "9999px"},
+                    boxShadow: {
+                        "ambient": "0 2px 8px rgba(0,0,0,0.08)",
+                        "bold": "0 4px 12px rgba(0,0,0,0.12)"
+                    }
+                },
+            },
+        }
+    </script>
+    
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .nav-item.active { background: #2A4E7D; border-left: 4px solid #3b82f6; color: white !important; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.3); }
+        
+        /* Modal and Overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(240, 244, 248, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .loading-overlay.active { display: flex; }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #004ac6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .toast {
+            position: fixed;
+            top: 24px; right: 24px;
+            z-index: 10000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+            align-items: center; gap: 8px;
+        }
+        .toast.active { display: flex; }
+        .toast.success { background: #22c55e; color: white; }
+        .toast.error { background: #ba1a1a; color: white; }
+        
+        .collapsible-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+        .collapsible-content.expanded { max-height: 1000px; }
+
+        label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; display: block; }
+        input, select { border: 1.5px solid #e2e8f0 !important; border-radius: 8px !important; padding: 10px 12px !important; font-size: 14px !important; transition: all 0.2s !important; }
+        input:focus, select:focus { border-color: #004ac6 !important; ring: 2px solid rgba(0,74,198,0.1) !important; outline: none !important; }
+    </style>
+
+    <script src="/js/api.js"></script>
+    <script>
+        if (!isLoggedIn()) {
+            window.location.href = '/index.html';
+        }
+    </script>
+</head>
+<body class="bg-background text-slate-900 font-body">
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar h-screen w-64 fixed left-0 top-0 flex flex-col bg-secondary text-white/70 z-[1001]">
+        <div class="p-6 mb-4 flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center text-white">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1">medical_services</span>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-white tracking-tighter">HospiSync</h2>
+                <p class="text-[10px] text-white/40 uppercase font-black">Clinical Care v1.0</p>
+            </div>
+        </div>
+        
+        <nav class="flex-1 space-y-1">
+            <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors hover:text-white hover:bg-white/10" onclick="location.href='/dashboard.html'">
+                <span class="material-symbols-outlined">dashboard</span>
+                <span class="font-semibold text-sm">Dashboard</span>
+            </button>
+            <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors hover:text-white hover:bg-white/10" onclick="location.href='/dashboard.html?section=beds'">
+                <span class="material-symbols-outlined">bed</span>
+                <span class="font-semibold text-sm">Bed Management</span>
+            </button>
+            <button class="nav-item active w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 text-white">
+                <span class="material-symbols-outlined">stethoscope</span>
+                <span class="font-semibold text-sm">Doctors</span>
+            </button>
+            <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors hover:text-white hover:bg-white/10" onclick="location.href='/dashboard.html?section=forecast'">
+                <span class="material-symbols-outlined">analytics</span>
+                <span class="font-semibold text-sm">Load Forecast</span>
+            </button>
+            
+            <div class="px-6 mt-8 mb-2 text-[10px] font-black text-white/30 uppercase tracking-widest">Operations</div>
+            
+            <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors hover:text-white hover:bg-white/10" onclick="location.href='/dashboard.html?section=recommend'">
+                <span class="material-symbols-outlined">fact_check</span>
+                <span class="font-semibold text-sm">Recommendations</span>
+            </button>
+            <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors hover:text-white hover:bg-white/10" onclick="location.href='/dashboard.html?section=transfer'">
+                <span class="material-symbols-outlined">move_group</span>
+                <span class="font-semibold text-sm">Patient Transfer</span>
+            </button>
+            <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors hover:text-white hover:bg-white/10" onclick="location.href='/dashboard.html?section=notifications'">
+                <span class="material-symbols-outlined">notifications</span>
+                <span class="font-semibold text-sm">Notifications</span>
+            </button>
+        </nav>
+        
+        <div class="p-4 border-t border-white/5">
+            <button class="text-white/60 hover:text-white flex items-center gap-3 w-full px-4 py-3 rounded-md" onclick="clearAuth(); window.location.href='/index.html'">
+                <span class="material-symbols-outlined">logout</span>
+                <span class="font-semibold text-sm">Sign Out</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="ml-64 p-8 min-h-screen" style="padding-top: 100px;">
+        
+        <!-- Header -->
+        <header class="fixed top-0 right-0 left-64 h-16 flex items-center px-8 bg-white/80 backdrop-blur-md border-b border-slate-200 z-[1000] justify-between">
+            <div class="flex flex-col">
+                <h2 class="text-lg font-bold tracking-tight">Doctor Management</h2>
+                <div class="flex items-center gap-2">
+                    <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider" id="headerLastUpdated">System Active</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <div class="relative w-64">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                    <input class="w-full bg-slate-50 border-none rounded-full py-2 pl-12 pr-4 text-xs" placeholder="Search doctors..." type="text" id="globalSearch"/>
+                </div>
+                <button class="material-symbols-outlined text-slate-500 p-2 hover:bg-slate-100 rounded-full relative">
+                    notifications
+                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+                </button>
+                <div class="flex items-center gap-3 pl-4 border-l border-slate-200">
+                    <div class="text-right">
+                        <p class="text-[11px] font-black uppercase tracking-tighter" id="headerHospitalName">Hospital Name</p>
+                        <p class="text-[9px] text-slate-500 font-bold">Medical Admin</p>
+                    </div>
+                    <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-white font-bold" id="headerAvatar">H</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Row -->
+        <div class="grid grid-cols-4 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-ambient border-l-4 border-primary">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 text-wrap">Total Doctors</p>
+                <div class="flex justify-between items-end">
+                    <h3 class="text-3xl font-black tracking-tighter" id="statTotalDoctors">0</h3>
+                    <div class="bg-primary/10 p-2 rounded-lg text-primary">
+                        <span class="material-symbols-outlined">groups</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-ambient border-l-4 border-success">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Available Now</p>
+                <div class="flex justify-between items-end">
+                    <h3 class="text-3xl font-black tracking-tighter text-success" id="statAvailable">0</h3>
+                    <div class="bg-success/10 p-2 rounded-lg text-success">
+                        <span class="material-symbols-outlined">how_to_reg</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-ambient border-l-4 border-error text-wrap">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">At Capacity</p>
+                <div class="flex justify-between items-end">
+                    <h3 class="text-3xl font-black tracking-tighter text-error" id="statAtLimit">0</h3>
+                    <div class="bg-error/10 p-2 rounded-lg text-error">
+                        <span class="material-symbols-outlined">person_off</span>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-ambient border-l-4 border-purple-500">
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Specialities</p>
+                <div class="flex justify-between items-end text-wrap">
+                    <h3 class="text-3xl font-black tracking-tighter text-purple-600" id="statSpecialities">0</h3>
+                    <div class="bg-purple-50 p-2 rounded-lg text-purple-600">
+                        <span class="material-symbols-outlined">clinical_notes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Doctor Section -->
+        <div class="bg-white rounded-xl shadow-ambient border border-slate-100 mb-8 overflow-hidden">
+            <button class="w-full flex items-center justify-between p-6 hover:bg-slate-50 transition-colors" id="toggleAddFormBtn">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined">person_add</span>
+                    </div>
+                    <h3 class="font-bold tracking-tight">Onboard New Medical Professional</h3>
+                </div>
+                <span class="material-symbols-outlined text-slate-400 transition-transform" id="addFormChevron">add_circle</span>
+            </button>
+            <div class="collapsible-content" id="addFormContent">
+                <form id="addDoctorForm" class="p-8 grid grid-cols-4 gap-6 border-t border-slate-100">
+                    <div class="col-span-2">
+                        <label for="doctorName">Doctor Name *</label>
+                        <input type="text" id="doctorName" class="w-full" required placeholder="e.g. Dr. Sarah Jenkins">
+                    </div>
+                    <div>
+                        <label for="doctorEmail">Email Address</label>
+                        <input type="email" id="doctorEmail" class="w-full" placeholder="doctor@hospital.com">
+                    </div>
+                    <div>
+                        <label for="doctorPhone">Phone Number</label>
+                        <input type="tel" id="doctorPhone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10" class="w-full" placeholder="e.g. 9876543210">
+                    </div>
+                    <div>
+                        <label for="doctorSpeciality">Speciality *</label>
+                        <select id="doctorSpeciality" class="w-full" required>
+                            <option value="">Select Speciality</option>
+                            <option value="ICU">ICU</option>
+                            <option value="Cardiology">Cardiology</option>
+                            <option value="Neurology">Neurology</option>
+                            <option value="General">General</option>
+                            <option value="Emergency">Emergency</option>
+                            <option value="Child Care">Child Care</option>
+                            <option value="Daycare">Daycare</option>
+                            <option value="Essential Care">Essential Care</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="doctorQualification">Qualification</label>
+                        <input type="text" id="doctorQualification" class="w-full" placeholder="MBBS, MD, MS...">
+                    </div>
+                    <div>
+                        <label for="doctorExperience">Years of Experience</label>
+                        <input type="number" id="doctorExperience" class="w-full" min="0" placeholder="e.g. 5">
+                    </div>
+                    <div class="relative">
+                        <label for="doctorSafeLimit" class="flex items-center gap-1">
+                            Safe Patient Limit
+                            <span class="material-icons text-[14px] text-slate-400 cursor-help" title="Maximum concurrent patients this doctor can handle safely">info</span>
+                        </label>
+                        <input type="number" id="doctorSafeLimit" class="w-full" value="12" min="1">
+                    </div>
+                    <div>
+                        <label for="doctorShiftStart">Shift Start</label>
+                        <input type="time" id="doctorShiftStart" class="w-full" value="08:00">
+                    </div>
+                    <div>
+                        <label for="doctorShiftEnd">Shift End</label>
+                        <input type="time" id="doctorShiftEnd" class="w-full" value="16:00">
+                    </div>
+                    <div class="col-span-2">
+                        <label for="doctorWorkDays">Work Days (comma separated)</label>
+                        <input type="text" id="doctorWorkDays" class="w-full" placeholder="e.g. MON,TUE,WED" value="MON,TUE,WED,THU,FRI">
+                    </div>
+                    <div class="col-span-4 flex justify-end">
+                        <button type="submit" class="bg-primary text-white px-8 py-3 rounded-lg font-bold shadow-lg shadow-blue-500/20 hover:brightness-110 active:scale-95 transition-all text-sm">Add Doctor to Registry</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="bg-white p-4 rounded-xl shadow-ambient border border-slate-100 mb-8 flex items-center justify-between">
+            <div class="flex items-center gap-4 flex-1 flex-wrap">
+                <div class="relative w-72 flex-shrink-0">
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
+                    <input type="text" id="filterSearch" class="w-full border-slate-200 rounded-lg pl-12 text-sm focus:ring-primary focus:border-primary" placeholder="Search by name...">
+                </div>
+                <select id="filterSpeciality" class="text-sm border-slate-200 rounded-lg min-w-[160px] flex-shrink-0 focus:ring-primary focus:border-primary">
+                    <option value="">All Specialities</option>
+                    <option value="ICU">ICU</option>
+                    <option value="Cardiology">Cardiology</option>
+                    <option value="Neurology">Neurology</option>
+                    <option value="General">General</option>
+                    <option value="Emergency">Emergency</option>
+                    <option value="Child Care">Child Care</option>
+                    <option value="Daycare">Daycare</option>
+                    <option value="Essential Care">Essential Care</option>
+                </select>
+                <select id="filterStatus" class="text-sm border-slate-200 rounded-lg min-w-[140px] flex-shrink-0 focus:ring-primary focus:border-primary">
+                    <option value="">All Statuses</option>
+                    <option value="AVAILABLE">Available</option>
+                    <option value="NEAR_LIMIT">Near Limit</option>
+                    <option value="AT_LIMIT">At Capacity</option>
+                </select>
+            </div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-widest" id="resultsCount">Showing 0 doctors</p>
+        </div>
+
+        <!-- Doctor Grid -->
+        <div id="doctorGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Cards populated by JS -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden flex-col items-center justify-center py-20 bg-white rounded-xl shadow-ambient border border-dashed border-slate-300">
+            <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                <span class="material-symbols-outlined text-4xl">person_search</span>
+            </div>
+            <h3 class="font-bold text-slate-900 mb-1">No doctors added yet</h3>
+            <p class="text-sm text-slate-500 mb-6">Start building your medical roster to manage patient throughput.</p>
+            <button class="text-primary font-bold text-sm hover:underline" onclick="document.getElementById('toggleAddFormBtn').click()">+ Add First Doctor</button>
+        </div>
+
+    </main>
+
+    <script src="/js/doctors.js"></script>
+</body>
+</html>

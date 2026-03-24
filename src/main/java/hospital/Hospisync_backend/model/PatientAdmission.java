@@ -5,7 +5,7 @@ import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "patient_admissions")
+@Table(name = "patient_admissions_v2")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,19 +20,9 @@ public class PatientAdmission {
     @JoinColumn(name = "hospital_id", nullable = false)
     private Hospital hospital;
 
-    @Column(name = "admission_time", nullable = false)
-    private LocalDateTime admissionTime;
+    @Column(name = "date", nullable = false)
+    private java.time.LocalDate date;
 
-    @Column(name = "department")
-    private String department;
-
-    @Column(name = "bed_id")
-    private Long bedId;
-
-    @PrePersist
-    protected void onCreate() {
-        if (this.admissionTime == null) {
-            this.admissionTime = LocalDateTime.now();
-        }
-    }
+    @Column(name = "admission_count", nullable = false)
+    private Integer admissionCount;
 }

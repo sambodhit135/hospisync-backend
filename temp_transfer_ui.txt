@@ -1,0 +1,30 @@
+}
+
+function renderDynamicBedInputs(categories) {
+    const container = document.getElementById('transferBedTypesContainer');
+    
+    if (!categories || categories.length === 0) {
+        container.innerHTML = '<div style="grid-column: span 2; padding: 20px; text-align: center; color: var(--warning);">This hospital has no registered bed categories.</div>';
+        return;
+    }
+
+    container.innerHTML = categories.map((cat, index) => {
+        const name = cat.categoryName || cat.name;
+        return `
+            <div class="form-group">
+                <label>${cat.icon} ${name} <span style="color:var(--text-muted);font-size:11px;">(Avail: ${cat.available})</span></label>
+                <input type="number" 
+                       id="input_cat_${index}" 
+                       data-available="${cat.available}"
+                       data-name="${name}"
+                       min="0" 
+                       max="${cat.available}"
+                       value="0" 
+                       oninput="onBedInput(this)">
+            </div>
+        `;
+    }).join('');
+}
+
+// Removed mapCategoryToField as we now use dynamic names from backend
+

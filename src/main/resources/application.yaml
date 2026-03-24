@@ -15,11 +15,11 @@
 
 spring:
   datasource:
-    url: ${DB_URL:jdbc:mysql://mysql-ab7e175-chavhansambodhit-fe75.c.aivencloud.com:11777/defaultdb?ssl-mode=REQUIRED}
-    username: ${DB_USERNAME:avnadmin}
+    url: ${DB_URL:jdbc:mysql://localhost:3306/hospisync}
+    username: ${DB_USERNAME:root}
     # This format tells Spring: "Use environment variable DB_PASSWORD,
     # but if it's missing, use the password string after the colon."
-    password: ${DB_PASSWORD:}
+    password: ${DB_PASSWORD:root}
 
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -50,12 +50,12 @@ logging:
     org.springframework.web: INFO
 
 server:
-  port: ${PORT:10000} # Render uses 10000 by default
+  port: ${PORT:8080} # Render uses 10000 by default, but local dev usually expects 8080
 
 app:
   jwt:
     secret: ${JWT_SECRET:7844a6548745c154ba4a5874c154ba4a5874c154ba4a5874c154ba4a5874c154}
-    expiration-ms: 604800000
+    expiration-ms: 86400000
 
   ml-service:
     url: ${ML_SERVICE_URL:http://localhost:8000}

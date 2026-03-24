@@ -1,0 +1,22 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< Hospital:Hospisync-backend >---------------------
+[INFO] Building Hospisync-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ Hospisync-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 14 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ Hospisync-backend ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 59 source files with javac [debug release 21] to target\classes
+[INFO] /D:/Porject using antigravity/Hospisync-backend/Hospisync-backend/src/main/java/hospital/Hospisync_backend/utils/JsonMapConverter.java: D:\Porject using antigravity\Hospisync-backend\Hospisync-backend\src\main\java\hospital\Hospisync_backend\utils\JsonMapConverter.java uses unchecked or unsafe operations.
+[INFO] /D:/Porject using antigravity/Hospisync-backend/Hospisync-backend/src/main/java/hospital/Hospisync_backend/utils/JsonMapConverter.java: Recompile with -Xlint:unchecked for details.
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  9.518 s
+[INFO] Finished at: 2026-03-22T10:46:02+05:30
+[INFO] ------------------------------------------------------------------------

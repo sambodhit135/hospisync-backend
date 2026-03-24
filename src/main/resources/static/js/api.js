@@ -118,8 +118,14 @@ async function apiRequest(path, options = {}) {
     });
 
     if (response.status === 401) {
+        console.log('Token expired — redirecting');
         clearAuth();
-        window.location.href = '/index.html?expired=true';
+        localStorage.removeItem('activeTransferId');
+        localStorage.removeItem('triedHospitals');
+        localStorage.removeItem('activeTransferSpeciality');
+        alert('Your session has expired. Please log in again.');
+        window.location.href = '/index.html';
+        return null;
     }
 
     if (!response.ok) {

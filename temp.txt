@@ -1,0 +1,59 @@
+122: async function submitTransfer() {
+123:     const toId = document.getElementById('transferToId').value;
+124:     const fromId = getHospitalId();
+125:     const total = parseInt(document.getElementById('transferCount').value) || 0;
+126: 
+127:     if (total <= 0) {
+128:         showValidationError('Please specify at least one patient to transfer.');
+129:         return;
+130:     }
+131: 
+132:     // Prepare payload dynamically
+133:     const payload = {
+134:         fromHospitalId: parseInt(fromId),
+135:         toHospitalId: parseInt(toId),
+136:         patientCount: total,
+137:         bedAllocations: {},
+138:         priority: document.getElementById('transferPriority').value || 'NORMAL'
+139:     };
+140: 
+141:     let hasCapacityError = false;
+142:     const inputs = document.querySelectorAll('#transferBedTypesContainer input');
+143:     inputs.forEach(input => {
+144:         const val = parseInt(input.value) || 0;
+145:         const max = parseInt(input.getAttribute('data-available')) || 0;
+146:         const name = input.getAttribute('data-name');
+147: 
+148:         if (val > max) {
+149:             hasCapacityError = true;
+150:             showValidationError(`⚠️ Requested ${val} ${name} patients, but only ${max} beds are available.`);
+151:             input.focus();
+152:         }
+153:         
+154:         if (val > 0) {
+155:             payload.bedAllocations[name] = val;
+156:         }
+157:     });
+158: 
+159:     if (hasCapacityError) return;
+160: 
+161:     if (!toId || !fromId) {
+162:         showToast('Missing transfer details', 'error');
+163:         return;
+164:     }
+165: 
+166:     showLoading(true);
+167:     try {
+168:         const result = await apiPost('/transfer/request', payload);
+169: 
+170:         if (result && !result.error) {
+171:             showToast('Transfer request created successfully', 'success');
+172:             closeTransferModal();
+173:             loadTransfers();
+174:             if (typeof fetchAIRecommendations === 'function') fetchAIRecommendations();
+175:         } else {
+176:             showValidationError(result?.error || 'Transfer failed');
+177:         }
+178:     } catch (err) {
+179:         showToast('Failed to create transfer', 'error');
+180:     } finally {

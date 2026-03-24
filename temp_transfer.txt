@@ -1,0 +1,60 @@
+
+async function submitTransfer() {
+    const toId = document.getElementById('transferToId').value;
+    const fromId = getHospitalId();
+    const total = parseInt(document.getElementById('transferCount').value) || 0;
+
+    if (total <= 0) {
+        showValidationError('Please specify at least one patient to transfer.');
+        return;
+    }
+
+    // Prepare payload dynamically
+    const payload = {
+        fromHospitalId: parseInt(fromId),
+        toHospitalId: parseInt(toId),
+        patientCount: total,
+        bedAllocations: {},
+        priority: document.getElementById('transferPriority').value || 'NORMAL'
+    };
+
+    let hasCapacityError = false;
+    const inputs = document.querySelectorAll('#transferBedTypesContainer input');
+    inputs.forEach(input => {
+        const val = parseInt(input.value) || 0;
+        const max = parseInt(input.getAttribute('data-available')) || 0;
+        const name = input.getAttribute('data-name');
+
+        if (val > max) {
+            hasCapacityError = true;
+            showValidationError(`⚠️ Requested ${val} ${name} patients, but only ${max} beds are available.`);
+            input.focus();
+        }
+        
+        if (val > 0) {
+            payload.bedAllocations[name] = val;
+        }
+    });
+
+    if (hasCapacityError) return;
+
+    if (!toId || !fromId) {
+        showToast('Missing transfer details', 'error');
+        return;
+    }
+
+    showLoading(true);
+    try {
+        const result = await apiPost('/transfer/request', payload);
+
+        if (result && !result.error) {
+            showToast('Transfer request created successfully', 'success');
+            closeTransferModal();
+            loadTransfers();
+            if (typeof fetchAIRecommendations === 'function') fetchAIRecommendations();
+        } else {
+            showValidationError(result?.error || 'Transfer failed');
+        }
+    } catch (err) {
+        showToast('Failed to create transfer', 'error');
+    } finally {

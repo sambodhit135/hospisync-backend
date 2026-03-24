@@ -21,4 +21,16 @@ public class RecommendationResponse {
     private String utilizationStatus;
     private double score;
     private List<SplitAllocation> splitTransferPlan;
+
+    // New Doctor Related Fields
+    private String availableDoctorName;
+    private String availableDoctorSpeciality;
+    private Integer doctorRemainingCapacity;
+    private Integer maxTransferablePatients;
+    private Boolean hasDoctor;
+    private Boolean isNearCapacity;
+    private String capacityWarning;
+    private String doctorAvailabilityType;
+    private String doctorResponseTime;
+
 }

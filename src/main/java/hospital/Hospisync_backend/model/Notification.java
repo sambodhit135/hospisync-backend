@@ -29,6 +29,7 @@ public class Notification {
     @Column(nullable = false)
     private String type; // DATA_REMINDER, TRANSFER_REQUEST, SYSTEM
 
+    @Builder.Default
     @Column(name = "is_read", nullable = false)
     private Boolean isRead = false;
 

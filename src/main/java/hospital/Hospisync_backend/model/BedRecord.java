@@ -21,18 +21,23 @@ public class BedRecord {
     @JoinColumn(name = "hospital_id", nullable = false)
     private Hospital hospital;
 
+    @Builder.Default
     @Column(name = "icu_occupied", nullable = false)
     private Integer icuOccupied = 0;
 
+    @Builder.Default
     @Column(name = "decare_occupied", nullable = false)
     private Integer decareOccupied = 0;
 
+    @Builder.Default
     @Column(name = "general_occupied", nullable = false)
     private Integer generalOccupied = 0;
 
+    @Builder.Default
     @Column(name = "childcare_occupied", nullable = false)
     private Integer childcareOccupied = 0;
 
+    @Builder.Default
     @Column(name = "essential_occupied", nullable = false)
     private Integer essentialOccupied = 0;
 

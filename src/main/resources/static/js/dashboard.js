@@ -31,6 +31,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadDashboard();
     await loadNotificationCount();
 
+    // Deep Linking Support (query param and hash)
+    const urlParams = new URLSearchParams(window.location.search);
+    const section = urlParams.get('section');
+    if (section) {
+        showSection(section);
+    } else if (window.location.hash) {
+        const hashSection = window.location.hash.replace('#', '').replace('transfers', 'transfer');
+        if (hashSection) showSection(hashSection);
+    }
+
     showLoading(false);
 });
 
@@ -194,19 +204,20 @@ function renderUtilization(data){
 
     if(!badge || !text) return;
 
-    badge.className="status-badge";
+    // Use classList instead of overwriting className
+    badge.classList.remove("underutilized", "moderate", "overutilized");
 
     if(data.utilizationStatus==="UNDERUTILIZED"){
-        badge.classList.add("underutilized");
-        text.textContent="Underutilized";
+        badge.classList.add("bg-blue-100", "text-blue-700");
+        text.textContent="Optimized Load";
     }
     else if(data.utilizationStatus==="MODERATE"){
-        badge.classList.add("moderate");
-        text.textContent="Moderate";
+        badge.classList.add("bg-green-100", "text-green-700");
+        text.textContent="Stable Throughput";
     }
     else{
-        badge.classList.add("overutilized");
-        text.textContent="Over Utilized";
+        badge.classList.add("bg-error/10", "text-error");
+        text.textContent="High Saturation";
     }
 
 }
@@ -224,25 +235,40 @@ function renderBedGrid(data){
     if(!grid) return;
 
     if(categories.length===0){
-        grid.innerHTML=`<p>No Bed Categories Found</p>`;
+        grid.innerHTML=`<div class="col-span-full py-12 text-center text-slate-400 font-bold uppercase tracking-widest">No Active Bed Units Found</div>`;
         return;
     }
 
     grid.innerHTML=categories.map(cat=>{
         const name = cat.name || cat.categoryName;
+        const availPercent = Math.round((cat.available / cat.total) * 100);
+        const statusColor = cat.available > 0 ? 'text-green-600' : 'text-error';
+        
         return `
-        <div class="bed-card">
-            <div style="position:absolute; top:10px; right:10px; display:flex; gap:6px;">
-                 <button onclick="openEditCategoryModal(${cat.categoryId || cat.id}, '${name}', ${cat.total}, ${cat.occupied}, '${cat.icon}')" style="background:none; border:none; cursor:pointer; font-size:12px; opacity:0.6; hover:opacity:1;">✏️</button>
-                 <button onclick="openDeleteCategoryModal(${cat.categoryId || cat.id}, '${name}')" style="background:none; border:none; cursor:pointer; font-size:12px; opacity:0.6; hover:opacity:1;">🗑️</button>
+        <div class="bg-white p-6 rounded-xl shadow-ambient border border-white hover:shadow-lg transition-all relative group">
+            <div class="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                 <button onclick="openEditCategoryModal(${cat.categoryId || cat.id}, '${name}', ${cat.total}, ${cat.occupied}, '${cat.icon}')" class="p-1.5 bg-slate-50 rounded-lg text-slate-400 hover:text-primary transition-colors">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                 </button>
+                 <button onclick="openDeleteCategoryModal(${cat.categoryId || cat.id}, '${name}')" class="p-1.5 bg-slate-50 rounded-lg text-slate-400 hover:text-error transition-colors">
+                    <span class="material-symbols-outlined text-sm">delete</span>
+                 </button>
             </div>
-            <div class="bed-icon">${cat.icon}</div>
-            <div class="bed-name">${name}</div>
-            <div class="bed-stat">
-                ${cat.occupied}/${cat.total}
-            </div>
-            <div class="bed-available">
-                ${cat.available} Available
+            <div class="text-3xl mb-4">${cat.icon}</div>
+            <div class="text-sm font-black text-slate-900 uppercase tracking-tight mb-4">${name}</div>
+            
+            <div class="space-y-3">
+                <div class="flex justify-between items-end">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Census</span>
+                    <span class="text-lg font-black text-slate-900">${cat.occupied}/${cat.total}</span>
+                </div>
+                <div class="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full bg-primary" style="width: ${100 - availPercent}%"></div>
+                </div>
+                <div class="flex justify-between items-center pt-1">
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Availability</span>
+                    <span class="text-[11px] font-bold ${statusColor}">${cat.available} Units</span>
+                </div>
             </div>
         </div>
         `;
@@ -266,17 +292,22 @@ function renderCharts(data){
     if(barChart) barChart.destroy();
 
     pieChart=new Chart(ctx1,{
-
         type:"doughnut",
-
         data:{
             labels:["Occupied","Available"],
             datasets:[{
                 data:[data.occupiedBeds,data.availableBeds],
-                backgroundColor:["#ef4444","#10b981"]
+                backgroundColor:["#00387a","#10b981"],
+                borderWidth: 0,
+                hoverOffset: 10
             }]
+        },
+        options: {
+            cutout: '75%',
+            plugins: {
+                legend: { display: false }
+            }
         }
-
     });
 
     const categories=data.categories || [];
@@ -284,19 +315,50 @@ function renderCharts(data){
     barChart=new Chart(ctx2,{
         type:"bar",
         data:{
-            labels:categories.map(c=>c.name),
+            labels:categories.map(c=>c.name || c.categoryName),
             datasets:[
                 {
                     label:"Occupied",
                     data:categories.map(c=>c.occupied),
-                    backgroundColor:"#ef4444"
+                    backgroundColor:"#ef4444", // Red
+                    borderRadius: 6,
+                    barThickness: 30,
                 },
                 {
                     label:"Available",
                     data:categories.map(c=>c.available),
-                    backgroundColor:"#10b981"
+                    backgroundColor:"#22c55e", // Green
+                    borderRadius: 6,
+                    barThickness: 30,
                 }
             ]
+        },
+        options: {
+            indexAxis: 'x',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { 
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        boxWidth: 12,
+                        usePointStyle: true,
+                        font: { size: 11, weight: 'bold' }
+                    }
+                } 
+            },
+            scales: {
+                x: { 
+                    grid: { display: false },
+                    ticks: { font: { size: 11, weight: 'bold' } }
+                },
+                y: { 
+                    beginAtZero: true,
+                    grid: { color: "rgba(0,0,0,0.02)" },
+                    ticks: { font: { size: 10 } }
+                }
+            }
         }
     });
 
@@ -329,8 +391,26 @@ function renderCharts(data){
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    labels: {
+                        usePointStyle: true,
+                        pointStyle: 'circle',
+                        padding: 20,
+                        font: { size: 10, weight: 'bold' }
+                    }
+                }
+            },
             scales: {
-                y: { beginAtZero: true }
+                y: { 
+                   beginAtZero: true,
+                   grid: { color: "#f8fafc" },
+                   ticks: { font: { size: 10 } }
+                },
+                x: {
+                   grid: { display: false },
+                   ticks: { font: { size: 10 } }
+                }
             }
         }
     });
@@ -422,23 +502,27 @@ function renderBedUpdateForm(data) {
     if (!container || !data.categories) return;
 
     container.innerHTML = data.categories.map(cat => `
-        <div class="card" style="padding:16px; margin-bottom:12px; background:var(--bg-card);">
-            <div style="font-weight:700; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;">
-                <span>${cat.icon} ${cat.name || cat.categoryName}</span>
-                <span style="font-size:11px; color:var(--text-muted); font-weight:500;">Capacity: ${cat.total}</span>
+        <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xl">${cat.icon}</span>
+                <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Cap: ${cat.total}</span>
             </div>
-            <div class="form-group" style="margin-bottom:0;">
-                <label style="font-size:11px; color:var(--text-muted);">Update Occupied beds</label>
+            <div class="mb-2">
+                <p class="text-[11px] font-black text-slate-900 uppercase tracking-tighter truncate">${cat.name || cat.categoryName}</p>
+                <p class="text-[9px] text-slate-500 font-bold">In-Patient Unit</p>
+            </div>
+            <div class="relative mt-4">
                 <input type="number" 
-                       class="form-control occupancy-input" 
+                       class="w-full bg-slate-50 border-none rounded-lg py-3 px-4 text-sm font-black text-primary focus:ring-2 focus:ring-primary/20 transition-all occupancy-input" 
                        data-id="${cat.categoryId || cat.id}" 
                        data-total="${cat.total}"
                        data-name="${cat.name || cat.categoryName}"
                        value="${cat.occupied}" 
                        min="0"
                        oninput="validateOccupancyInput(this)">
-                <div id="error_${cat.categoryId || cat.id}" class="bed-input-error" style="color:#f87171; font-size:10px; margin-top:4px; display:none; font-weight:600;"></div>
+                <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300 uppercase">OCC</span>
             </div>
+            <div id="error_${cat.categoryId || cat.id}" class="bed-input-error mt-2 p-2 bg-error/5 text-error text-[10px] font-bold rounded hidden animate-pulse"></div>
         </div>
     `).join('');
 }
@@ -600,16 +684,24 @@ function showSection(sectionId) {
         // Trigger section-specific loads
         if (sectionId === 'forecast' && typeof loadForecast === 'function') loadForecast();
         if (sectionId === 'recommend' && typeof fetchAIRecommendations === 'function') fetchAIRecommendations();
-        if (sectionId === 'transfer' && typeof loadTransfers === 'function') loadTransfers();
+        if (sectionId === 'transfer') {
+            if (typeof loadTransfers === 'function') loadTransfers();
+            if (typeof initTransferPage === 'function') initTransferPage();
+        }
+        if (sectionId === 'notifications' && typeof renderNotifications === 'function') renderNotifications();
         if (sectionId === 'overview') {
             loadDashboard();
             if (mapInstance) setTimeout(() => mapInstance.invalidateSize(), 200);
+        }
+        if (sectionId === 'beds' && typeof loadDoctorsForBedsTab === 'function') {
+            loadDoctorsForBedsTab();
         }
     }
 
     // Close sidebar on mobile after click
     if (window.innerWidth <= 1024) toggleSidebar();
 }
+window.showSection = showSection;
 
 // ==============================
 // MODALS
@@ -753,11 +845,11 @@ async function submitDeleteCategory() {
 function toggleNotifications() {
     const popover = document.getElementById('notifPopover');
     if (popover) {
-        const isVisible = popover.classList.contains('active');
-        if (isVisible) {
-            popover.classList.remove('active');
+        const isHidden = popover.classList.contains('hidden');
+        if (!isHidden) {
+            popover.classList.add('hidden');
         } else {
-            popover.classList.add('active');
+            popover.classList.remove('hidden');
             renderNotifications();
         }
     }
@@ -813,4 +905,70 @@ async function markAsRead(id) {
 
 // Global logout click listener
 document.getElementById('logoutLink')?.addEventListener('click', handleLogout);
-document.getElementById('profileLogoutBtn')?.addEventListener('click', handleLogout);
+
+// ==============================
+// DOCTOR LOAD UPDATE (BEDS TAB)
+// ==============================
+
+async function loadDoctorsForBedsTab() {
+    const list = document.getElementById('dashboardDoctorList');
+    if (!list) return;
+    
+    try {
+        const hospitalId = getHospitalId();
+        if(!hospitalId) return;
+
+        const data = await apiGet(`/doctors/all?hospitalId=${hospitalId}`);
+        if (!data || data.error) {
+            list.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-error text-xs">Failed to load doctors</td></tr>`;
+            return;
+        }
+
+        if (data.length === 0) {
+            list.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-slate-400 text-xs">No doctors found for this facility</td></tr>`;
+            return;
+        }
+
+        list.innerHTML = data.map(doc => {
+            const isAtLimit = doc.availabilityStatus === 'AT_LIMIT' || doc.currentPatientCount >= doc.safeLimit;
+            let statusBadge = '';
+            
+            if (isAtLimit) {
+                statusBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-error/10 text-error">AT CAPACITY</span>`;
+            } else if (!doc.isAvailable) {
+                statusBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-500">UNAVAILABLE</span>`;
+            } else {
+                statusBadge = `<span class="px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-success/10 text-success">AVAILABLE</span>`;
+            }
+
+            return `
+                <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="px-4 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold text-xs">${doc.name.charAt(0)}</div>
+                            <span class="font-bold text-slate-900 text-sm">${doc.name}</span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 text-xs font-medium text-slate-600">${doc.speciality}</td>
+                    <td class="px-4 py-4">
+                        <div class="flex flex-col gap-1 items-start">
+                            ${statusBadge}
+                            <span class="text-[10px] text-slate-400 font-bold">Load: ${doc.currentPatientCount} / ${doc.safeLimit}</span>
+                        </div>
+                    </td>
+                    <td class="px-4 py-4 text-right">
+                        <div class="flex items-center justify-end gap-2">
+                            <button onclick="decrementLoad(${doc.id})" class="w-7 h-7 rounded-full border border-slate-200 bg-white text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-colors">−</button>
+                            <input type="number" id="loadInput-${doc.id}" value="${doc.currentPatientCount}" min="0" max="${doc.safeLimit}" class="w-12 text-center border border-slate-200 rounded text-xs py-1 outline-none font-bold">
+                            <button onclick="incrementLoad(${doc.id})" class="w-7 h-7 rounded-full border border-slate-200 bg-white text-slate-600 flex items-center justify-center hover:bg-slate-100 transition-colors">+</button>
+                            <button onclick="saveLoad(${doc.id})" class="ml-1 px-3 py-1 bg-primary text-white rounded text-[10px] font-bold shadow-sm hover:brightness-110 transition-all">Save</button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (e) {
+        console.error(e);
+        list.innerHTML = `<tr><td colspan="4" class="py-8 text-center text-error text-xs">Error loading doctors</td></tr>`;
+    }
+}

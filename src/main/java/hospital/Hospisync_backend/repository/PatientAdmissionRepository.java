@@ -13,10 +13,9 @@ import java.util.Map;
 @Repository
 public interface PatientAdmissionRepository extends JpaRepository<PatientAdmission, Long> {
 
-    @Query(value = "SELECT DATE(admission_time) as day, COUNT(*) as patients " +
-                   "FROM patient_admissions " +
+    @Query(value = "SELECT date as day, admission_count as patients " +
+                   "FROM patient_admissions_v2 " +
                    "WHERE hospital_id = :hospitalId " +
-                   "GROUP BY DATE(admission_time) " +
                    "ORDER BY day DESC " +
                    "LIMIT 7", nativeQuery = true)
     List<Map<String, Object>> findDailyCountsLast7Days(@Param("hospitalId") Long hospitalId);

@@ -296,9 +296,9 @@ option:checked, option:hover {
 }
 
 .nav-item.active {
-    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(124, 58, 237, 0.1));
-    color: var(--primary-300);
-    box-shadow: inset 3px 0 0 var(--primary-500);
+    background: #2A4E7D !important;
+    color: white !important;
+    border-left: 4px solid #3b82f6 !important;
 }
 
 .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
@@ -315,12 +315,13 @@ option:checked, option:hover {
     text-align: center;
 }
 
-/* Main content area */
 .main-content {
     flex: 1;
     margin-left: 260px;
     display: flex;
     flex-direction: column;
+    min-width: 0; /* Allow content to shrink correctly in flex container */
+    transition: var(--transition);
 }
 
 /* Top Header */
@@ -421,7 +422,7 @@ option:checked, option:hover {
     justify-content: center;
 }
 
-.profile-btn {
+.profile-display {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -433,7 +434,6 @@ option:checked, option:hover {
     transition: var(--transition-fast);
 }
 
-.profile-btn:hover { background: var(--bg-input); }
 
 .profile-avatar {
     width: 32px;
@@ -461,6 +461,7 @@ option:checked, option:hover {
     grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     margin-bottom: 28px;
+    width: 100%;
 }
 
 .kpi-card {
@@ -580,6 +581,36 @@ option:checked, option:hover {
 .chart-container {
     position: relative;
     height: 300px;
+    width: 100%;
+}
+
+/* ===== Responsive Breakpoints ===== */
+@media (max-width: 1200px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 992px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .header-search input { width: 200px; }
+    .header-search input:focus { width: 240px; }
+}
+
+@media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); width: 0; }
+    .main-content { margin-left: 0; }
+    .sidebar.active { transform: translateX(0); width: 260px; }
+    
+    .top-header { padding: 12px 16px; }
+    .page-content { padding: 20px 16px; }
+    
+    .header-right .header-search { display: none; } /* Hide search on small mobile to save space */
+}
+
+@media (max-width: 600px) {
+    .kpi-grid { grid-template-columns: 1fr; }
+    .kpi-value { font-size: 24px; }
+    .top-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .header-right { width: 100%; justify-content: space-between; }
 }
 
 /* ===== Custom Leaflet Map Styles ===== */

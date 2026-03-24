@@ -1,0 +1,823 @@
+﻿diff --git a/src/main/resources/static/js/transfer.js b/src/main/resources/static/js/transfer.js
+index c633e1b..0ed762e 100644
+--- a/src/main/resources/static/js/transfer.js
++++ b/src/main/resources/static/js/transfer.js
+@@ -48,22 +48,42 @@ function renderDynamicBedInputs(categories) {
+         return;
+     }
+ 
+-    container.innerHTML = categories.map((cat, index) => {
++    // Filter categories to only show those that have a requirement > 0 in the dashboard
++    const filteredCategories = categories.filter(cat => {
+         const name = cat.categoryName || cat.name;
++        const reqInput = document.getElementById(`req-${name}`);
++        return (parseInt(reqInput?.value) || 0) > 0;
++    });
++
++    // If no specific requirements were set (e.g. searched only by distance), show all available
++    const displayList = filteredCategories.length > 0 ? filteredCategories : categories;
++
++    container.innerHTML = displayList.map((cat, index) => {
++        const name = cat.categoryName || cat.name;
++        const reqInput = document.getElementById(`req-${name}`);
++        const defaultVal = parseInt(reqInput?.value) || 0;
++
+         return `
+-            <div class="form-group">
+-                <label>${cat.icon} ${name} <span style="color:var(--text-muted);font-size:11px;">(Avail: ${cat.available})</span></label>
+-                <input type="number" 
+-                       id="input_cat_${index}" 
+-                       data-available="${cat.available}"
+-                       data-name="${name}"
+-                       min="0" 
+-                       max="${cat.available}"
+-                       value="0" 
+-                       oninput="onBedInput(this)">
++            <div class="space-y-2">
++                <label class="text-[10px] font-black text-slate-400 border-l-2 border-primary/20 pl-2 uppercase tracking-widest block">${cat.icon || '≡ƒ¢î'} ${name} (Avail: ${cat.available})</label>
++                <div class="relative">
++                    <input type="number" 
++                           id="input_cat_${index}" 
++                           data-available="${cat.available}"
++                           data-name="${name}"
++                           class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-sm font-black text-primary focus:ring-2 focus:ring-primary/20 transition-all"
++                           min="0" 
++                           max="${cat.available}"
++                           value="${defaultVal}" 
++                           oninput="onBedInput(this)">
++                    <span class="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-black text-slate-300">UNITS</span>
++                </div>
+             </div>
+         `;
+     }).join('');
++    
++    // Calculate total immediately after rendering to show pre-filled total
++    calcTransferTotal();
+ }
+ 
+ // Removed mapCategoryToField as we now use dynamic names from backend
+@@ -149,9 +169,32 @@ async function submitTransfer() {
+ 
+         if (result && !result.error) {
+             showToast('Transfer request created successfully', 'success');
++            
++            const data = result;
++            const transferId = data.id || data.transferId;
++            const toHospitalId = document.getElementById('transferToId').value;
++            const selectedHospitalId = parseInt(toHospitalId);
++            const specSelect = document.getElementById('filter-speciality');
++            const selectedSpeciality = specSelect ? specSelect.value : '';
++
++            // Store for timer page
++            localStorage.setItem('activeTransferId', String(transferId));
++            localStorage.setItem('activeTransferSpeciality', selectedSpeciality || '');
++
++            // Add tried hospital to list
++            const tried = JSON.parse(localStorage.getItem('triedHospitals') || '[]');
++            if (!tried.includes(selectedHospitalId)) {
++                tried.push(selectedHospitalId);
++            }
++            localStorage.setItem('triedHospitals', JSON.stringify(tried));
++
+             closeTransferModal();
+-            loadTransfers();
+-            if (typeof fetchAIRecommendations === 'function') fetchAIRecommendations();
++
++            // Redirect immediately
++            setTimeout(() => {
++                window.location.href = 'dashboard.html#transfers';
++                if (typeof initTransferPage === 'function') setTimeout(initTransferPage, 100);
++            }, 500);
+         } else {
+             showValidationError(result?.error || 'Transfer failed');
+         }
+@@ -192,36 +235,50 @@ function renderTransferTables(incoming, outgoing) {
+         incomingTable.innerHTML = incoming.length === 0
+             ? '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">No incoming requests</td></tr>'
+             : incoming.map(t => {
+-                const statusColor = getStatusColor(t.status);
++                const status = (t.status || 'PENDING').toUpperCase();
++                const statusColor = getStatusColor(status);
+                 let actions = '';
+                 
+-                if (t.status === 'PENDING') {
++                if (status === 'PENDING') {
+                     actions = `
+-                        <button class="btn btn-sm" style="background:var(--success);color:white;padding:4px 8px;" onclick="updateTransferStatus(${t.id}, 'APPROVED')">Accept</button>
+-                        <button class="btn btn-sm" style="background:var(--danger);color:white;padding:4px 8px;margin-left:4px;" onclick="updateTransferStatus(${t.id}, 'REJECTED')">Reject</button>
++                        <button class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg transition-all shadow-sm" onclick="updateTransferStatus(${t.id}, 'APPROVED')">Confirm</button>
++                        <button class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all" onclick="updateTransferStatus(${t.id}, 'REJECTED')">Decline</button>
+                     `;
+-                } else if (t.status === 'APPROVED') {
+-                    actions = `<button class="btn btn-sm" style="background:var(--primary);color:white;padding:4px 8px;" onclick="updateTransferStatus(${t.id}, 'COMPLETED')">Mark Completed</button>`;
++                } else if (status === 'APPROVED') {
++                    actions = `<button class="px-4 py-2 bg-primary text-white text-[10px] font-black uppercase tracking-widest rounded-lg shadow-lg shadow-primary/20" onclick="updateTransferStatus(${t.id}, 'COMPLETED')">Complete Bed Move</button>`;
+                 } else {
+-                    actions = `<span style="color:var(--text-muted);font-size:12px;">No actions</span>`;
++                    actions = `<span class="text-[10px] font-black text-slate-300 uppercase tracking-widest">Archived</span>`;
+                 }
+ 
+                 return `
+-                    <tr>
+-                        <td>
+-                            <div style="font-weight:600;color:var(--text-primary);">${t.fromHospital?.hospitalName || 'Unknown'}</div>
+-                        </td>
+-                        <td>
+-                            <div style="font-weight:700;color:var(--primary);">${t.patientCount} Total</div>
+-                            <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">
+-                                ${renderBedTypeBreakdown(t)}
++                    <tr class="hover:bg-slate-50/50 transition-colors">
++                        <td class="px-8 py-4">
++                            <div class="flex items-center gap-3">
++                                <span class="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center text-primary text-[10px] font-black">
++                                    ${(t.fromHospital?.hospitalName || 'H').charAt(0)}
++                                </span>
++                                <div class="font-black text-slate-900 text-sm tracking-tight">${t.fromHospital?.hospitalName || 'Unknown Facility'}</div>
+                             </div>
+                         </td>
+-                        <td>
+-                            <div style="font-size:12px;color:var(--text-muted);">${new Date(t.createdAt).toLocaleString()}</div>
++                        <td class="px-8 py-4">
++                             <div class="flex flex-col">
++                                <span class="text-sm font-black text-primary">${t.patientCount} Units</span>
++                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${renderBedTypeBreakdown(t)}</span>
++                             </div>
++                        </td>
++                        <td class="px-8 py-4">
++                            <span class="text-[11px] font-bold text-slate-500">${new Date(t.createdAt).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}</span>
++                        </td>
++                        <td class="px-8 py-4 text-center">
++                            <span class="px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest" style="color:${statusColor}; background:${statusColor}15; border: 1px solid ${statusColor}30;">
++                                ${status}
++                            </span>
++                        </td>
++                        <td class="px-8 py-4 text-right">
++                             <div class="flex justify-end gap-2">
++                                ${actions}
++                             </div>
+                         </td>
+-                        <td><span style="color:${statusColor};font-weight:600;font-size:12px;padding:4px 10px;border-radius:12px;background:${statusColor}15;border:1px solid ${statusColor}40;">${t.status}</span></td>
+-                        <td>${actions}</td>
+                     </tr>
+                 `;
+             }).join('');
+@@ -231,19 +288,33 @@ function renderTransferTables(incoming, outgoing) {
+         outgoingTable.innerHTML = outgoing.length === 0
+             ? '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:32px;">No outgoing transfers</td></tr>'
+             : outgoing.map(t => {
+-                const statusColor = getStatusColor(t.status);
++                const status = (t.status || 'PENDING').toUpperCase();
++                const statusColor = getStatusColor(status);
+                 return `
+-                    <tr>
+-                        <td style="font-size:12px;color:var(--text-muted);font-weight:600;">#${t.id}</td>
+-                        <td style="font-weight:600;color:var(--text-primary);">${t.toHospital?.hospitalName || 'Unknown'}</td>
+-                        <td>
+-                            <div style="font-weight:700;color:var(--primary);">${t.patientCount} Total</div>
+-                            <div style="font-size:11px;color:var(--text-secondary);margin-top:2px;">
+-                                ${renderBedTypeBreakdown(t)}
++                    <tr class="hover:bg-slate-50/50 transition-colors">
++                        <td class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">#${t.id}</td>
++                        <td class="px-8 py-4">
++                            <div class="flex items-center gap-3">
++                                <span class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 text-[10px] font-black">
++                                    ${(t.toHospital?.hospitalName || 'H').charAt(0)}
++                                </span>
++                                <div class="font-black text-slate-900 text-sm tracking-tight">${t.toHospital?.hospitalName || 'Destination Unknown'}</div>
++                            </div>
++                        </td>
++                        <td class="px-8 py-4">
++                            <div class="flex flex-col">
++                                <span class="text-sm font-black text-primary">${t.patientCount} Units</span>
++                                <span class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">${renderBedTypeBreakdown(t)}</span>
+                             </div>
+                         </td>
+-                        <td><span style="color:${statusColor};font-weight:600;font-size:12px;padding:4px 10px;border-radius:12px;background:${statusColor}15;border:1px solid ${statusColor}40;">${t.status}</span></td>
+-                        <td>${new Date(t.createdAt).toLocaleDateString()}</td>
++                        <td class="px-8 py-4 text-center">
++                             <span class="px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest" style="color:${statusColor}; background:${statusColor}15; border: 1px solid ${statusColor}30;">
++                                ${status}
++                             </span>
++                        </td>
++                        <td class="px-8 py-4 text-right text-[11px] font-bold text-slate-500">
++                             ${new Date(t.createdAt).toLocaleDateString(undefined, {month:'short', day:'numeric', year:'numeric'})}
++                        </td>
+                     </tr>
+                 `;
+             }).join('');
+@@ -292,9 +363,33 @@ async function updateTransferStatus(transferId, newStatus) {
+         });
+         
+         if (result && !result.error) {
+-            showToast(`Transfer successfully marked as ${newStatus}`, 'success');
+-            loadTransfers();
+-            if (typeof loadDashboard === 'function') loadDashboard(); 
++            showToast('Transfer request created successfully', 'success');
++            
++            const data = result;
++            const transferId = data.id || data.transferId;
++            const toHospitalId = document.getElementById('transferToId').value;
++            const selectedHospitalId = parseInt(toHospitalId);
++            const specSelect = document.getElementById('filter-speciality');
++            const selectedSpeciality = specSelect ? specSelect.value : '';
++
++            // Store for timer page
++            localStorage.setItem('activeTransferId', String(transferId));
++            localStorage.setItem('activeTransferSpeciality', selectedSpeciality || '');
++
++            // Add tried hospital to list
++            const tried = JSON.parse(localStorage.getItem('triedHospitals') || '[]');
++            if (!tried.includes(selectedHospitalId)) {
++                tried.push(selectedHospitalId);
++            }
++            localStorage.setItem('triedHospitals', JSON.stringify(tried));
++
++            closeTransferModal();
++
++            // Redirect immediately
++            setTimeout(() => {
++                window.location.href = 'dashboard.html#transfers';
++                if (typeof initTransferPage === 'function') setTimeout(initTransferPage, 100);
++            }, 500);
+         } else {
+             console.error("Status Update Failed Result:", result);
+             showToast(result?.error || 'Server rejected the status update', 'error');
+@@ -319,13 +414,15 @@ function showNotificationAlert(message, type = 'INFO') {
+     const title = type === 'EMERGENCY' ? 'EMERGENCY ALERT' : 'Notification';
+     
+     alert.innerHTML = `
+-        <div style="display:flex; gap:12px; align-items:flex-start;">
+-            <div style="font-size:24px;">${icon}</div>
+-            <div style="flex:1;">
+-                <div style="font-weight:700; font-size:12px; margin-bottom:4px; opacity:0.8; letter-spacing:0.5px;">${title}</div>
+-                <div style="font-size:13px; line-height:1.4; color:var(--text-primary);">${message}</div>
++        <div class="flex items-start gap-4 p-4 glass-card rounded-xl shadow-ambient border-l-4 ${type === 'EMERGENCY' ? 'border-error bg-error/5' : 'border-primary bg-white/50'}">
++            <div class="text-2xl">${icon}</div>
++            <div class="flex-1 min-w-0">
++                <div class="text-[9px] font-black uppercase tracking-widest opacity-60 mb-1">${title}</div>
++                <div class="text-sm font-bold text-slate-900 truncate">${message}</div>
+             </div>
+-            <button onclick="this.parentElement.parentElement.remove()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px;">&times;</button>
++            <button onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-900 transition-colors">
++                <span class="material-symbols-outlined text-lg">close</span>
++            </button>
+         </div>
+     `;
+ 
+@@ -376,3 +473,556 @@ setInterval(poolNotifications, 10000);
+ document.getElementById('transferModal')?.addEventListener('click', function (e) {
+     if (e.target === this) closeTransferModal();
+ });
++
++// =============================================================
++// TWO-STAGE TRANSFER TIMER ΓÇö Active Incoming Request Panel
++// =============================================================
++
++let stageTimerIntervals = {};
++
++// ΓöÇΓöÇ Helper: get the JWT token (uses the correct key from api.js) ΓöÇΓöÇ
++function getAuthToken() {
++    return getToken(); // getToken() is defined in api.js and reads localStorage.getItem('token')
++}
++
++/**
++ * TASK 2 FIX: changed from /incoming/pending/{hospitalId} to /incoming/active
++ * The new endpoint extracts hospital from the JWT token server-side.
++ * TASK 1: Added console.log debugging.
++ */
++async function pollActiveIncomingTransfers() {
++    console.log('≡ƒöä pollActiveIncomingTransfers: polling started...');
++
++    const token = getAuthToken();
++    if (!token) {
++        console.warn('pollActiveIncomingTransfers: No token found, skipping poll.');
++        return;
++    }
++
++    try {
++        const response = await fetch('/api/transfer/incoming/active', {
++            headers: { 'Authorization': `Bearer ${token}` }
++        });
++
++        if (!response.ok) {
++            console.warn('pollActiveIncomingTransfers: Bad response', response.status);
++            return;
++        }
++
++        const transfers = await response.json();
++        console.log('≡ƒôí Active incoming transfers:', transfers);
++        renderActiveIncomingPanel(transfers || []);
++    } catch (err) {
++        console.error('pollActiveIncomingTransfers: Error:', err);
++    }
++}
++
++function renderActiveIncomingPanel(transfers) {
++    Object.values(stageTimerIntervals).forEach(clearInterval);
++    stageTimerIntervals = {};
++
++    const container = document.getElementById('activeTransferPanel');
++    if (!container) {
++        console.warn('renderActiveIncomingPanel: #activeTransferPanel not found in DOM');
++        return;
++    }
++
++    if (!transfers || transfers.length === 0) {
++        container.innerHTML = `
++        <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:12px;
++                    padding:16px 20px; margin-bottom:16px;
++                    display:flex; align-items:center; gap:12px;">
++            <span style="font-size:20px;">&#x2705;</span>
++            <div>
++                <div style="font-size:13px; font-weight:700; color:#166534;">No Active Transfer Requests</div>
++                <div style="font-size:11px; color:#15803d; margin-top:2px;">Live monitoring is ON  checking every 10 seconds</div>
++            </div>
++        </div>`;
++        return;
++    }
++
++    let html = '';
++    transfers.forEach(t => {
++        console.log('Rendering card for transfer:', t);
++        html += renderStageCard(t);
++    });
++    container.innerHTML = html;
++
++    transfers.forEach(t => {
++        const deadline = t.stage === 'PENDING' ? t.acknowledgeBy : t.confirmBy;
++        if (!deadline) return;
++        startCountdown(t.id, new Date(deadline));
++        if (t.stage === 'ACKNOWLEDGED') loadDoctorsForTransfer(t.id);
++    });
++}
++
++function renderStageCard(t) {
++    const isStage1 = t.stage === 'PENDING';
++    const deadlineStr = isStage1 ? t.acknowledgeBy : t.confirmBy;
++    const deadline = deadlineStr ? new Date(deadlineStr) : null;
++    const remainingMs = deadline ? Math.max(0, deadline - Date.now()) : 0;
++    const remainingSecs = Math.floor(remainingMs / 1000);
++    const minutes = Math.floor(remainingSecs / 60);
++    const seconds = remainingSecs % 60;
++    const timeStr = `${minutes}:${String(seconds).padStart(2, '0')}`;
++
++    const fromName = t.fromHospital?.hospitalName || 'Unknown Hospital';
++    const patients = t.patientCount || 0;
++    const priority = (t.priority || 'NORMAL').toUpperCase();
++    const priorityBg = priority === 'EMERGENCY' ? '#FEE2E2' : priority === 'CRITICAL' ? '#FEF3C7' : '#F1F5F9';
++    const priorityColor = priority === 'EMERGENCY' ? '#B91C1C' : priority === 'CRITICAL' ? '#B45309' : '#475569';
++    const timerColor = remainingSecs < 30 ? '#B91C1C' : (isStage1 ? '#B45309' : '#1D4ED8');
++    const beds = t.bedAllocations ? Object.entries(t.bedAllocations).map(([k, v]) => `${k}: ${v}`).join('  ') : '';
++    const stageBadge = isStage1 ? 'STAGE 1  ACKNOWLEDGE' : 'STAGE 2  ASSIGN DOCTOR';
++
++    const actionsHtml = isStage1 ? `
++        <div style="display:flex; gap:12px; margin-top:16px;">
++            <button onclick="acknowledgeTransferRequest(${t.id})"
++                style="flex:1; padding:12px 16px; background:#004ac6; color:white;
++                       border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;"
++                onmouseover="this.style.opacity=0.85" onmouseout="this.style.opacity=1">
++                Acknowledge - I am Checking
++            </button>
++            <button onclick="rejectTransferRequest(${t.id})"
++                style="padding:12px 20px; background:white; color:#B91C1C;
++                       border:2px solid #B91C1C; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">
++                Reject
++            </button>
++        </div>` : `
++        <div style="margin-top:16px;">
++            <label style="font-size:12px; font-weight:700; color:#374151; display:block; margin-bottom:8px;">Select Available Doctor:</label>
++            <select id="doctorSelect_${t.id}"
++                style="width:100%; padding:10px 14px; border:1px solid #E2E8F0; border-radius:10px;
++                       margin-bottom:12px; font-size:13px; background:#F8FAFC; color:#1E293B;">
++                <option value="">Loading doctors...</option>
++            </select>
++            <div style="display:flex; gap:12px;">
++                <button onclick="confirmTransferRequest(${t.id})"
++                    style="flex:1; padding:12px 16px; background:#15803D; color:white;
++                           border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">
++                    Confirm Transfer
++                </button>
++                <button onclick="rejectTransferRequest(${t.id})"
++                    style="padding:12px 20px; background:white; color:#B91C1C;
++                           border:2px solid #B91C1C; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">
++                    Cannot Accept
++                </button>
++            </div>
++        </div>`;
++
++    return `
++    <div id="stageCard_${t.id}"
++         style="background:white; border-radius:14px; border-left:4px solid #004ac6;
++                padding:24px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
++        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
++            <div style="flex:1;">
++                <span style="background:${priorityBg}; color:${isStage1 ? '#B45309' : '#1D4ED8'};
++                             padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700;
++                             display:inline-block; margin-bottom:10px;">${stageBadge}</span>
++                <div style="font-size:17px; font-weight:800; color:#0F172A; margin-bottom:4px;">From: ${fromName}</div>
++                <div style="font-size:13px; color:#64748B; margin-bottom:2px;">
++                    <span style="background:${priorityBg}; color:${priorityColor}; padding:2px 8px;
++                                 border-radius:10px; font-size:11px; font-weight:700;">${priority}</span>
++                    &nbsp;&nbsp;${patients} Patients
++                </div>
++                ${beds ? `<div style="font-size:11px; color:#94A3B8; margin-top:4px;">${beds}</div>` : ''}
++            </div>
++            <div style="text-align:center; padding-left:24px; min-width:100px;">
++                <div style="font-size:11px; font-weight:700; color:#94A3B8; margin-bottom:4px; text-transform:uppercase; letter-spacing:0.05em;">Time Left</div>
++                <div id="timer_${t.id}" style="font-size:44px; font-weight:900; color:${timerColor}; font-family:monospace; letter-spacing:-2px; line-height:1;">${timeStr}</div>
++                <div style="font-size:11px; color:#94A3B8; margin-top:4px;">${isStage1 ? 'to acknowledge' : 'to confirm'}</div>
++            </div>
++        </div>
++        ${actionsHtml}
++    </div>`;
++}
++
++function startCountdown(transferId, deadline) {
++    const el = document.getElementById(`timer_${transferId}`);
++    if (!el) { console.warn(`startCountdown: timer_${transferId} not found`); return; }
++
++    stageTimerIntervals[transferId] = setInterval(() => {
++        const remainingMs = deadline - Date.now();
++        if (remainingMs <= 0) {
++            clearInterval(stageTimerIntervals[transferId]);
++            el.textContent = '0:00';
++            el.style.color = '#B91C1C';
++            setTimeout(pollActiveIncomingTransfers, 5000);
++            return;
++        }
++        const secs = Math.floor(remainingMs / 1000);
++        const m = Math.floor(secs / 60);
++        const s = secs % 60;
++        el.textContent = `${m}:${String(s).padStart(2, '0')}`;
++        el.style.color = secs < 30 ? '#B91C1C' : '#004ac6';
++    }, 1000);
++}
++
++async function acknowledgeTransferRequest(transferId) {
++    const token = getAuthToken();
++    if (!token) { showToast('Session expired. Please re-login.', 'error'); return; }
++    try {
++        const result = await fetch(`/api/transfer/${transferId}/acknowledge`, {
++            method: 'PUT',
++            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }
++        }).then(r => r.json());
++        if (result && !result.error) {
++            showToast('Transfer request created successfully', 'success');
++            
++            const data = result;
++            const transferId = data.id || data.transferId;
++            const toHospitalId = document.getElementById('transferToId').value;
++            const selectedHospitalId = parseInt(toHospitalId);
++            const specSelect = document.getElementById('filter-speciality');
++            const selectedSpeciality = specSelect ? specSelect.value : '';
++
++            // Store for timer page
++            localStorage.setItem('activeTransferId', String(transferId));
++            localStorage.setItem('activeTransferSpeciality', selectedSpeciality || '');
++
++            // Add tried hospital to list
++            const tried = JSON.parse(localStorage.getItem('triedHospitals') || '[]');
++            if (!tried.includes(selectedHospitalId)) {
++                tried.push(selectedHospitalId);
++            }
++            localStorage.setItem('triedHospitals', JSON.stringify(tried));
++
++            closeTransferModal();
++
++            // Redirect immediately
++            setTimeout(() => {
++                window.location.href = 'dashboard.html#transfers';
++                if (typeof initTransferPage === 'function') setTimeout(initTransferPage, 100);
++            }, 500);
++        if (result && !result.error) {
++            showToast('Transfer request created successfully', 'success');
++            
++            const data = result;
++            const transferId = data.id || data.transferId;
++            const toHospitalId = document.getElementById('transferToId').value;
++            const selectedHospitalId = parseInt(toHospitalId);
++            const specSelect = document.getElementById('filter-speciality');
++            const selectedSpeciality = specSelect ? specSelect.value : '';
++
++            // Store for timer page
++            localStorage.setItem('activeTransferId', String(transferId));
++            localStorage.setItem('activeTransferSpeciality', selectedSpeciality || '');
++
++            // Add tried hospital to list
++            const tried = JSON.parse(localStorage.getItem('triedHospitals') || '[]');
++            if (!tried.includes(selectedHospitalId)) {
++                tried.push(selectedHospitalId);
++            }
++            localStorage.setItem('triedHospitals', JSON.stringify(tried));
++
++            closeTransferModal();
++
++            // Redirect immediately
++            setTimeout(() => {
++                window.location.href = 'dashboard.html#transfers';
++                if (typeof initTransferPage === 'function') setTimeout(initTransferPage, 100);
++            }, 500);
++        if (result && !result.error) {
++            showToast('Transfer request created successfully', 'success');
++            
++            const data = result;
++            const transferId = data.id || data.transferId;
++            const toHospitalId = document.getElementById('transferToId').value;
++            const selectedHospitalId = parseInt(toHospitalId);
++            const specSelect = document.getElementById('filter-speciality');
++            const selectedSpeciality = specSelect ? specSelect.value : '';
++
++            // Store for timer page
++            localStorage.setItem('activeTransferId', String(transferId));
++            localStorage.setItem('activeTransferSpeciality', selectedSpeciality || '');
++
++            // Add tried hospital to list
++            const tried = JSON.parse(localStorage.getItem('triedHospitals') || '[]');
++            if (!tried.includes(selectedHospitalId)) {
++                tried.push(selectedHospitalId);
++            }
++            localStorage.setItem('triedHospitals', JSON.stringify(tried));
++
++            closeTransferModal();
++
++            // Redirect immediately
++            setTimeout(() => {
++                window.location.href = 'dashboard.html#transfers';
++                if (typeof initTransferPage === 'function') setTimeout(initTransferPage, 100);
++            }, 500);
++
++
++// ==========================================
++// SENDER-SIDE TIMER & NEXT-HOSPITAL POLLING (USER PROVIDED)
++// ==========================================
++
++function initTransferPage() {
++  const activeId = localStorage.getItem('activeTransferId');
++    
++  console.log('Active transfer ID:', activeId);
++  
++  if (activeId && activeId !== 'null' && activeId !== 'undefined') {
++    
++    // Show loading state immediately
++    const panel = document.getElementById('senderTimerPanel');
++    if (panel) {
++      panel.style.display = 'block';
++      panel.innerHTML = `
++        <div style="background:white;
++                    border-radius:12px;
++                    border-left:4px solid #004ac6;
++                    padding:24px;
++                    margin-bottom:24px;
++                    box-shadow:0 2px 8px rgba(0,0,0,0.08)">
++          <p style="color:#004ac6; font-weight:600; margin:0;">
++            ΓÅ│ Loading transfer status...
++          </p>
++        </div>`;
++    }
++    
++    // Start polling immediately
++    pollTransferStatus(activeId);
++    
++    // Poll every 5 seconds
++    const pollInterval = setInterval(() => {
++      const currentId = localStorage.getItem('activeTransferId');
++      if (!currentId) {
++        clearInterval(pollInterval);
++        return;
++      }
++      pollTransferStatus(currentId);
++    }, 5000);
++  }
++  
++  // Also load transfer history
++  if (typeof loadTransferData === 'function') loadTransferData();
++  else if (typeof loadTransfers === 'function') loadTransfers();
++}
++
++// Call on page load
++// Use a generic logic that is safe to add
++if (document.readyState === 'loading') {
++    document.addEventListener('DOMContentLoaded', initTransferPage);
++} else {
++    initTransferPage();
++}
++// Add hash change listener to trigger setup when clicking internal links
++window.addEventListener('hashchange', () => {
++    if (window.location.hash.includes('transfer')) {
++        initTransferPage();
++    }
++});
++
++async function pollTransferStatus(transferId) {
++  try {
++    const token = localStorage.getItem('token');
++    const response = await fetch(`/api/transfer/${transferId}/status`, {
++        headers: {
++          'Authorization': 'Bearer ' + token
++        }
++    });
++    
++    if (!response.ok) {
++      console.error('Status fetch failed:', response.status);
++      return;
++    }
++    
++    const data = await response.json();
++    console.log('Transfer status:', data);
++    
++    // Update timer panel based on stage
++    updateTimerPanel(data);
++    
++  } catch (error) {
++    console.error('Poll error:', error);
++  }
++}
++
++function updateTimerPanel(transfer) {
++  const panel = document.getElementById('senderTimerPanel');
++  if (!panel) return;
++  
++  panel.style.display = 'block';
++  
++  const stage = transfer.stage;
++  
++  // Determine deadline
++  let deadline = null;
++  let stageText = '';
++  let stageColor = '#004ac6';
++  
++  if (stage === 'PENDING') {
++    deadline = new Date(transfer.acknowledgeBy);
++    stageText = 'STAGE 1 ΓÇö Awaiting Hospital Response';
++  } else if (stage === 'ACKNOWLEDGED') {
++    deadline = new Date(transfer.confirmBy);
++    stageText = 'STAGE 2 ΓÇö Hospital Assigning Doctor';
++  } else if (stage === 'APPROVED' || stage === 'COMPLETED') {
++    showSuccessPanel(transfer, panel);
++    return;
++  } else if (stage === 'TIMEOUT_STAGE1' || 
++             stage === 'TIMEOUT_STAGE2' ||
++             stage === 'REJECTED') {
++    showNextHospitalPanel(transfer, panel);
++    return;
++  }
++  
++  // Calculate remaining time
++  const remainingMs = deadline - new Date();
++  const remainingSecs = Math.max(0, Math.floor(remainingMs / 1000));
++  const mins = Math.floor(remainingSecs / 60);
++  const secs = remainingSecs % 60;
++  const timeStr = `${mins}:${secs.toString().padStart(2,'0')}`;
++  
++  // Color based on urgency
++  const timerColor = remainingSecs < 30 ? '#B91C1C' : remainingSecs < 60 ? '#B45309' : '#004ac6';
++  
++  panel.innerHTML = `
++    <div style="background:white;
++                border-radius:12px;
++                border-left:4px solid #004ac6;
++                padding:24px;
++                margin-bottom:24px;
++                box-shadow:0 2px 8px rgba(0,0,0,0.08)">
++      
++      <div style="display:flex; justify-content:space-between; align-items:center;">
++        <div>
++          <span style="background:#EFF6FF; color:#004ac6; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
++            ${stageText}
++          </span>
++          <h3 style="margin:8px 0 4px; font-size:18px; color:#0F172A;">
++            Transfer sent to: ${transfer.toHospitalName || 'Network Facility'}
++          </h3>
++          <p style="color:#64748B; margin:0; font-size:14px;">
++            ${transfer.totalPatients || 0} patients
++          </p>
++        </div>
++        
++        <div style="text-align:center;">
++          <div style="font-size:52px; font-weight:700; color:${timerColor}; font-family:monospace; ${remainingSecs < 30 ? 'animation:pulse 1s infinite' : ''}">
++            ${timeStr}
++          </div>
++          <div style="font-size:12px; color:#64748B;">
++            remaining to respond
++          </div>
++        </div>
++      </div>
++      
++      <div style="margin-top:16px; padding-top:16px; border-top:1px solid #F1F5F9; font-size:13px; color:#64748B;">
++        Γä╣∩╕Å If hospital does not respond, next available hospital will be suggested automatically.
++      </div>
++    </div>`;
++}
++
++function showSuccessPanel(transfer, panel) {
++  localStorage.removeItem('activeTransferId');
++  
++  panel.innerHTML = `
++    <div style="background:#DCFCE7;
++                border-radius:12px;
++                border-left:4px solid #15803D;
++                padding:24px;
++                margin-bottom:24px;">
++      <h3 style="color:#15803D; margin:0 0 8px;">
++        Γ£à Transfer Confirmed!
++      </h3>
++      <p style="color:#166534; margin:0;">
++        Hospital: ${transfer.toHospitalName || 'Network Facility'} 
++        has accepted the transfer.
++        ${transfer.assignedDoctorName ? 'Doctor: ' + transfer.assignedDoctorName : ''}
++      </p>
++    </div>`;
++  
++  setTimeout(() => {
++    panel.style.display = 'none';
++  }, 8000);
++}
++
++function showNextHospitalPanel(transfer, panel) {
++  const next = transfer.nextHospital;
++  
++  if (!next) {
++    panel.innerHTML = `
++      <div style="background:#FEF3C7;
++                  border-radius:12px;
++                  border-left:4px solid #B45309;
++                  padding:24px;
++                  margin-bottom:24px;">
++        <h3 style="color:#B45309; margin:0 0 8px;">
++          ΓÜá∩╕Å No Response Received
++        </h3>
++        <p style="color:#92400E; margin:0;">
++          ${transfer.toHospitalName || 'Hospital'} did not respond.
++          No other hospitals available nearby.
++          Please try increasing search radius.
++        </p>
++      </div>`;
++    return;
++  }
++  
++  panel.innerHTML = `
++    <div style="background:white;
++                border-radius:12px;
++                border-left:4px solid #B45309;
++                padding:24px;
++                margin-bottom:24px;
++                box-shadow:0 2px 8px rgba(0,0,0,0.08)">
++      
++      <div style="margin-bottom:16px;">
++        <span style="background:#FEF3C7; color:#B45309; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:600;">
++          Γî¢ ${transfer.toHospitalName || 'Hospital'} did not respond
++        </span>
++      </div>
++      
++      <h3 style="margin:0 0 4px;color:#0F172A;">
++        ≡ƒöä Next Available Hospital Found:
++      </h3>
++      
++      <div style="background:#F8FAFC; border-radius:8px; padding:16px; margin:12px 0;">
++        <div style="font-size:18px; font-weight:700; color:#0F172A;">
++          ≡ƒÅÑ ${next.hospitalName}
++        </div>
++        <div style="color:#64748B; font-size:14px; margin-top:4px;">
++          ≡ƒôì ${next.distanceKm || 0} km away &nbsp;|&nbsp; ≡ƒ¢Å∩╕Å ${next.availableBeds || 0} beds
++          ${next.availableDoctorName ? ' | ≡ƒæ¿ΓÜò∩╕Å ' + next.availableDoctorName : ''}
++        </div>
++      </div>
++      
++      <div style="display:flex; gap:12px;">
++        <button 
++          onclick="sendToNextHospital(${next.hospitalId}, '${next.hospitalName || 'Next Hospital'}', ${transfer.totalPatients || 1})"
++          style="flex:1; padding:12px; background:#004ac6; color:white; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer;">
++          Send Request to ${next.hospitalName}
++        </button>
++        <button 
++          onclick="cancelActiveTransfer()"
++          style="padding:12px 20px; background:white; color:#64748B; border:1px solid #E2E8F0; border-radius:8px; font-size:14px; cursor:pointer;">
++          Cancel
++        </button>
++      </div>
++    </div>`;
++}
++
++function cancelActiveTransfer() {
++  localStorage.removeItem('activeTransferId');
++  document.getElementById('senderTimerPanel').style.display = 'none';
++}
++
++function sendToNextHospital(hospitalId, hospitalName, patients) {
++    const triedStr = localStorage.getItem('triedHospitals');
++    let tried = [];
++    if (triedStr) {
++        try { tried = JSON.parse(triedStr); } catch(e){}
++    }
++    if (!tried.includes(hospitalId)) {
++        tried.push(hospitalId);
++        localStorage.setItem('triedHospitals', JSON.stringify(tried));
++    }
++    
++    document.getElementById('senderTimerPanel').style.display = 'none';
++    if (typeof openTransferModal === 'function') {
++        openTransferModal(hospitalId, hospitalName);
++    } else {
++        showToast('Error: Cannot load transfer modal', 'error');
++    }
++}

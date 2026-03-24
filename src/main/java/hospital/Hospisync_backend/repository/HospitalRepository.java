@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface HospitalRepository extends JpaRepository<Hospital, Long> {
+    Optional<Hospital> findByEmail(String email);
     Optional<Hospital> findByGovId(String govId);
 
     @Query("SELECT h FROM Hospital h WHERE h.id != :excludeId")

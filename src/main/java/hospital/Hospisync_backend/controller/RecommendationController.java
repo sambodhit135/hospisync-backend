@@ -22,11 +22,15 @@ public class RecommendationController {
     public ResponseEntity<?> getRecommendations(
             @PathVariable Long hospitalId,
             @RequestParam(required = false) Double maxDistance,
+            @RequestParam(required = false) String speciality,
+            @RequestParam(required = false) List<Long> excludeHospitalIds,
             @RequestParam Map<String, String> allParams) {
+
         
         try {
             List<RecommendationResponse> recommendations =
-                    recommendationService.getRecommendations(hospitalId, maxDistance, allParams);
+                    recommendationService.getRecommendations(hospitalId, maxDistance, speciality, allParams, excludeHospitalIds);
+
             return ResponseEntity.ok(recommendations);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -1,0 +1,42 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ---------------------< Hospital:Hospisync-backend >---------------------
+[INFO] Building Hospisync-backend 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ Hospisync-backend ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 14 resources from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ Hospisync-backend ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 59 source files with javac [debug release 21] to target\classes
+[INFO] /D:/Porject using antigravity/Hospisync-backend/Hospisync-backend/src/main/java/hospital/Hospisync_backend/utils/JsonMapConverter.java: D:\Porject using antigravity\Hospisync-backend\Hospisync-backend\src\main\java\hospital\Hospisync_backend\utils\JsonMapConverter.java uses unchecked or unsafe operations.
+[INFO] /D:/Porject using antigravity/Hospisync-backend/Hospisync-backend/src/main/java/hospital/Hospisync_backend/utils/JsonMapConverter.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /D:/Porject using antigravity/Hospisync-backend/Hospisync-backend/src/main/java/hospital/Hospisync_backend/controller/TransfersController.java:[137,47] cannot find symbol
+  symbol:   method confirmTransfer(java.lang.Long,java.lang.Long,java.lang.Long)
+  location: variable transferService of type hospital.Hospisync_backend.service.TransferService
+[INFO] 1 error
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  20.534 s
+[INFO] Finished at: 2026-03-22T10:42:30+05:30
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.11.0:compile (default-compile) on project Hospisync-backend: Compilation failure
+[ERROR] /D:/Porject using antigravity/Hospisync-backend/Hospisync-backend/src/main/java/hospital/Hospisync_backend/controller/TransfersController.java:[137,47] cannot find symbol
+[ERROR]   symbol:   method confirmTransfer(java.lang.Long,java.lang.Long,java.lang.Long)
+[ERROR]   location: variable transferService of type hospital.Hospisync_backend.service.TransferService
+[ERROR] 
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

@@ -5,107 +5,293 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HospiSync – Register Hospital</title>
     <meta name="description" content="Register your hospital on HospiSync to start monitoring bed occupancy and forecasting patient load.">
-    <link rel="stylesheet" href="/css/style.css">
+    
+    <!-- Design System: Clinical Precision -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet & Geocoder -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#00387a",
+                        "primary-container": "#1b4f9b",
+                        "secondary": "#4a5f7f",
+                        "secondary-container": "#c2d8fe",
+                        "tertiary": "#002e98",
+                        "tertiary-container": "#0041cd",
+                        "surface": "#f6fafe",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-low": "#f0f4f8",
+                        "surface-container": "#eaeef2",
+                        "surface-container-high": "#e4e9ed",
+                        "surface-container-highest": "#dfe3e7",
+                        "on-surface": "#171c1f",
+                        "on-surface-variant": "#434751",
+                        "outline": "#737782",
+                        "outline-variant": "#c3c6d3",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6"
+                    },
+                    fontFamily: {
+                        "headline": ["Inter", "sans-serif"],
+                        "body": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                    boxShadow: {
+                        "ambient": "0px 8px 24px rgba(15, 39, 68, 0.06)"
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+        input:focus { outline: none; border-bottom: 2px solid #00387a !important; }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(240, 244, 248, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .loading-overlay.active { display: flex; }
+        .spinner {
+            width: 48px; height: 48px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #00387a;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 24px; right: 24px;
+            z-index: 10000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            display: none;
+        }
+        .toast.active { display: flex; align-items: center; gap: 8px; }
+        .toast.success { background: #008744; color: white; }
+        .toast.error { background: #ba1a1a; color: white; }
+
+        /* Suggestions List */
+        .suggestions-list {
+            position: absolute;
+            width: 100%;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            margin-top: 0.5rem;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            display: none;
+        }
+        .suggestion-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .suggestion-item:last-child { border-bottom: none; }
+        .suggestion-item:hover { background: #f8fafc; }
+        .suggestion-item .s-name { font-weight: 700; font-size: 13px; color: #1e293b; }
+        .suggestion-item .s-detail { font-size: 11px; color: #64748b; }
+
+        .error-message {
+            color: #ba1a1a;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+            display: none;
+        }
+        .error-message.active { display: block; }
+    </style>
 </head>
-<body>
+<body class="bg-surface font-body text-on-surface min-h-screen overflow-x-hidden">
+
+    <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
-        <p>Creating your account...</p>
+        <p class="text-primary font-bold">Creating your account...</p>
     </div>
 
+    <!-- Toast -->
     <div class="toast" id="toast"></div>
 
-    <div class="auth-page">
-        <div class="auth-container" style="max-width:560px;">
-            <div class="auth-card">
-                <div class="auth-logo">
-                    <h1><span class="logo-icon">🏥</span> HospiSync</h1>
-                    <p>Register your hospital</p>
+    <main class="min-h-screen flex flex-col md:flex-row">
+        <!-- Left Section: Registration Form (45%) -->
+        <section class="w-full md:w-[45%] p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-surface-container-low shadow-xl z-10 relative">
+            <div class="max-w-md mx-auto w-full">
+                <!-- Header -->
+                <div class="mb-10">
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="material-symbols-outlined text-primary text-3xl">health_and_safety</span>
+                        <span class="font-headline font-extrabold text-2xl tracking-tight text-primary">HospiSync</span>
+                    </div>
+                    <h1 class="font-headline text-3xl font-bold text-on-surface tracking-tight mb-2">Register Your Hospital</h1>
+                    <p class="text-on-surface-variant text-sm">Join the digital healthcare network to optimize bed management and patient transfers.</p>
                 </div>
 
-                <form id="registerForm">
-                    <div class="form-group">
-                        <label for="hospitalName">Hospital Name</label>
-                        <input type="text" id="hospitalName" required>
+                <!-- Registration Form -->
+                <form id="registerForm" class="space-y-5">
+                    <!-- Hospital Name -->
+                    <div class="space-y-1.5">
+                        <label for="hospitalName" class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Hospital Name</label>
+                        <input class="w-full bg-surface-container-lowest border-none px-4 py-3 rounded-lg shadow-sm focus:ring-0 text-sm transition-all" placeholder="St. Mary's General Hospital" type="text" id="hospitalName" required/>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" required>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Admin Email -->
+                        <div class="space-y-1.5">
+                            <label for="email" class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Admin Email</label>
+                            <input class="w-full bg-surface-container-lowest border-none px-4 py-3 rounded-lg shadow-sm focus:ring-0 text-sm" placeholder="admin@hospital.org" type="email" id="email" required/>
                         </div>
-                        <div class="form-group">
-                            <label for="password">Password</label>
-                            <input type="password" id="password" required>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="govId">Government Hospital ID</label>
-                            <input type="text" id="govId" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="contactNumber">Contact Number</label>
-                            <input type="text" id="contactNumber">
+                        <!-- Password -->
+                        <div class="space-y-1.5">
+                            <label for="password" class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Secure Password</label>
+                            <input class="w-full bg-surface-container-lowest border-none px-4 py-3 rounded-lg shadow-sm focus:ring-0 text-sm" placeholder="••••••••••••" type="password" id="password" required/>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="address">Full Address</label>
-                        <input type="text" id="address">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="latitude">Latitude (Auto-detected)</label>
-                            <input type="number" step="any" id="latitude" value="" placeholder="Detecting lat..." readonly class="w-full bg-[#111827]/50 border border-gray-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-600 outline-none transition-all">
-                        </div>
-                        <div class="form-group">
-                            <label for="longitude">Longitude (Auto-detected)</label>
-                            <input type="number" step="any" id="longitude" value="" placeholder="Detecting lng..." readonly class="w-full bg-[#111827]/50 border border-gray-800 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-600 outline-none transition-all">
-                        </div>
-                    </div>
-                    <div class="form-group" style="margin-top: 24px;">
-                        <label for="mapSearch" class="block text-sm font-medium text-gray-300 mb-2">Hospital Location Search (Auto-Address)</label>
-                        <div class="search-wrapper space-y-3">
-                            <div class="relative group">
-                                <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-blue-500 transition-colors z-10">🔍</span>
-                                <input type="text" id="mapSearch" autocomplete="off" class="w-full bg-[#111827] border border-gray-800 rounded-xl pl-12 pr-4 py-3 text-white focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all outline-none shadow-inner" placeholder="Search for your hospital...">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Government Hospital ID -->
+                        <div class="space-y-1.5">
+                            <div class="flex items-center gap-1.5">
+                                <label for="govId" class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Government ID</label>
+                                <span class="material-symbols-outlined text-[16px] text-primary cursor-help" title="Enter the official ID issued to your hospital by the government. Any format is accepted.">info</span>
                             </div>
-                            
-                            <button type="button" id="geolocateBtn" onclick="useMyLocation()" class="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:from-blue-700 active:to-indigo-700 text-white font-semibold rounded-xl px-6 py-4 transition-all transform hover:scale-[1.01] active:scale-95 shadow-lg shadow-blue-900/40 border border-blue-500/20">
-                                <span>📍</span> Use My Current Location
-                            </button>
-                            
-                            <div id="locationStatus" class="text-xs font-medium px-4 py-2 rounded-lg bg-gray-900/50 border border-gray-800 hidden animate-pulse"></div>
-                            
-                            <div id="searchSuggestions" class="suggestions-list bg-[#111827] border border-gray-800 rounded-xl overflow-hidden shadow-2xl mt-1"></div>
+                            <input class="w-full bg-surface-container-lowest border-none px-4 py-3 rounded-lg shadow-sm focus:ring-0 text-sm" placeholder="Enter your Government Hospital ID" type="text" id="govId" required maxlength="50"/>
+                        </div>
+                        <!-- Contact Number -->
+                        <div class="space-y-1.5">
+                            <label for="contactNumber" class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Contact Number</label>
+                            <input class="w-full bg-surface-container-lowest border-none px-4 py-3 rounded-lg shadow-sm focus:ring-0 text-sm" placeholder="10-digit mobile" type="text" id="contactNumber" required maxlength="10"/>
                         </div>
                     </div>
 
-                    <div id="map" style="height: 300px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1;"></div>
+                    <!-- Full Address -->
+                    <div class="space-y-1.5">
+                        <label for="address" class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Full Address</label>
+                        <input class="w-full bg-surface-container-lowest border-none px-4 py-3 rounded-lg shadow-sm focus:ring-0 text-sm" placeholder="123 Medical Drive, Central District" type="text" id="address"/>
+                    </div>
+
+                    <!-- Geolocation Search -->
+                    <div class="space-y-1.5">
+                        <label for="mapSearch" class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Location Search (Auto-Address)</label>
+                        <div class="relative group">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10">🔍</span>
+                            <input type="text" id="mapSearch" autocomplete="off" class="w-full bg-surface-container-lowest border-none rounded-lg pl-10 pr-4 py-3 shadow-sm focus:ring-0 text-sm transition-all" placeholder="Search for your hospital...">
+                            <div id="searchSuggestions" class="suggestions-list"></div>
+                        </div>
+                    </div>
+
+                    <!-- Geolocation Fields (Readonly) -->
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-1.5">
+                            <label for="latitude" class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Latitude</label>
+                            <input class="w-full bg-surface-container-high/30 border-none px-4 py-3 rounded-lg text-xs text-on-surface-variant font-mono" id="latitude" readonly="" type="number" step="any" placeholder="Auto-detecting..."/>
+                        </div>
+                        <div class="space-y-1.5">
+                            <label for="longitude" class="block text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Longitude</label>
+                            <input class="w-full bg-surface-container-high/30 border-none px-4 py-3 rounded-lg text-xs text-on-surface-variant font-mono" id="longitude" readonly="" type="number" step="any" placeholder="Auto-detecting..."/>
+                        </div>
+                    </div>
+
+                    <!-- Location Actions -->
+                    <div class="space-y-3">
+                        <button type="button" id="geolocateBtn" onclick="useMyLocation()" class="w-full flex items-center justify-center gap-2 bg-surface-container-lowest border-2 border-primary-container text-primary-container font-bold py-3 px-6 rounded-lg hover:bg-primary-container hover:text-white transition-all text-xs">
+                            <span class="material-symbols-outlined text-lg">my_location</span>
+                            Use My Current Location
+                        </button>
+                        <div id="locationStatus" class="hidden text-[11px] font-bold p-3 rounded-lg animate-pulse text-center"></div>
+                    </div>
 
                     <div class="error-message" id="registerError"></div>
 
-                    <button type="submit" class="w-full relative group overflow-hidden bg-gradient-to-r from-blue-700 via-blue-600 to-indigo-700 hover:from-blue-600 hover:via-blue-500 hover:to-indigo-600 text-white font-bold rounded-xl px-6 py-5 transition-all transform hover:scale-[1.02] active:scale-95 shadow-2xl shadow-blue-900/50 mt-8 flex items-center justify-center gap-3 border border-white/10">
-                        <div class="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                        <span class="text-xl">🚀</span> 
-                        <span class="tracking-wide">Register Hospital</span>
+                    <!-- Submit Button -->
+                    <button class="w-full bg-gradient-to-r from-primary to-primary-container text-white font-bold py-4 px-6 rounded-lg shadow-lg hover:opacity-90 transition-all text-base mt-4" type="submit">
+                        Register Hospital
                     </button>
-                </form>
 
-                <div class="auth-footer">
-                    Already registered? <a href="/index.html">Sign in</a>
-                </div>
+                    <!-- Footer Link -->
+                    <div class="text-center mt-6">
+                        <p class="text-sm text-on-surface-variant">
+                            Already registered? 
+                            <a class="text-tertiary font-semibold hover:underline decoration-2 underline-offset-4" href="/index.html">Sign In</a>
+                        </p>
+                    </div>
+                </form>
             </div>
-        </div>
-    </div>
+        </section>
+
+        <!-- Right Section: Map Visual (55%) -->
+        <section class="hidden md:flex md:w-[55%] bg-surface-container p-8 lg:p-12 items-center justify-center">
+            <div class="w-full h-full max-w-4xl flex flex-col">
+                <div class="mb-4 flex items-center justify-between">
+                    <label class="block text-[10px] font-black uppercase tracking-[0.2em] text-on-surface-variant">Precise Geographic Placement</label>
+                    <div class="flex gap-2">
+                        <span class="bg-primary text-white px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase shadow-sm pulse-effect">Live Nexus</span>
+                    </div>
+                </div>
+                <!-- Map Container -->
+                <div class="flex-grow bg-white rounded-2xl shadow-ambient overflow-hidden relative border border-white">
+                    <div id="map" class="w-full h-full z-10"></div>
+                    
+                    <!-- Map Overlay Stats -->
+                    <div class="absolute bottom-6 left-6 right-6 flex gap-4 z-[500]">
+                        <div class="glass-card p-4 rounded-xl flex-1 flex items-center gap-3 border border-white/50 shadow-ambient">
+                            <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined">share_location</span>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-tighter">Coordinate Precision</p>
+                                <p class="text-xs font-black text-on-surface">Sub-meter accuracy</p>
+                            </div>
+                        </div>
+                        <div class="glass-card p-4 rounded-xl flex-1 flex items-center gap-3 border border-white/50 shadow-ambient">
+                            <div class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined">map</span>
+                            </div>
+                            <div>
+                                <p class="text-[9px] font-black text-on-surface-variant uppercase tracking-tighter">Network Node</p>
+                                <p class="text-xs font-black text-on-surface">Cloud-Sync Ready</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="mt-4 text-[10px] text-on-surface-variant font-medium flex items-center gap-1.5 opacity-60">
+                    <span class="material-symbols-outlined text-sm">enhanced_encryption</span>
+                    Registration coordinates are encrypted and used solely for emergency logistics and regional distribution.
+                </p>
+            </div>
+        </section>
+    </main>
 
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>

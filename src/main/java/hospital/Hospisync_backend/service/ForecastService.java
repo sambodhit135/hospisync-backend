@@ -36,6 +36,7 @@ public class ForecastService {
 
         // Map to DataPoints for historical graph (reversed to show chronological order)
         List<ForecastResponse.DataPoint> historicalData = dailyCounts.stream()
+                .filter(m -> m.get("day") != null && m.get("patients") != null)
                 .map(m -> ForecastResponse.DataPoint.builder()
                         .timestamp(m.get("day").toString())
                         .occupancy(((Number) m.get("patients")).intValue())
@@ -55,6 +56,21 @@ public class ForecastService {
 
         int predictedPatients = (count > 0) ? sum / count : 0;
 
+        double mae = 0.0;
+        double rmse = 0.0;
+        if (count > 0) {
+            double sumError = 0;
+            double sumSqError = 0;
+            for (Map<String, Object> day : dailyCounts) {
+                int actual = ((Number) day.get("patients")).intValue();
+                double error = actual - predictedPatients;
+                sumError += Math.abs(error);
+                sumSqError += Math.pow(error, 2);
+            }
+            mae = sumError / count;
+            rmse = Math.sqrt(sumSqError / count);
+        }
+
         ForecastResponse response = ForecastResponse.builder()
                 .hospitalId(hospitalId)
                 .predictedPatients(predictedPatients)
@@ -62,6 +78,8 @@ public class ForecastService {
                 .dataPointsUsed(count)
                 .historicalData(historicalData)
                 .modelUsed("STATISTICAL_MA")
+                .mae(Math.round(mae * 100.0) / 100.0)
+                .rmse(Math.round(rmse * 100.0) / 100.0)
                 .build();
 
         // Compatibility fields for existing UI if still used partially

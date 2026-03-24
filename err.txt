@@ -1,0 +1,9 @@
+D:\Porject using antigravity\Hospisync-backend\Hospisync-backend\src\main\resources\static\js\transfer.js:1029
+
+
+
+SyntaxError: Unexpected end of input
+    at wrapSafe (node:internal/modules/cjs/loader:1486:18)
+    at checkSyntax (node:internal/main/check_syntax:78:3)
+
+Node.js v22.14.0

@@ -37,4 +37,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    @GetMapping("/verify")
+    public ResponseEntity<?> verifyToken(org.springframework.security.core.Authentication auth) {
+        return ResponseEntity.ok(Map.of("valid", true, "hospital", auth.getName()));
+    }
 }

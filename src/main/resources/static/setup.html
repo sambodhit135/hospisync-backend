@@ -1,276 +1,474 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hospital Setup – HospiSync</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>HospiSync - Setup Wizard</title>
+    
+    <!-- Design System: Clinical Precision -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "background": "#f6fafe",
+              "on-primary-fixed": "#001a40",
+              "primary-fixed": "#d8e2ff",
+              "surface-variant": "#dfe3e7",
+              "on-tertiary-container": "#b3c1ff",
+              "on-primary-fixed-variant": "#064490",
+              "inverse-on-surface": "#edf1f5",
+              "surface": "#f6fafe",
+              "surface-container-high": "#e4e9ed",
+              "on-background": "#171c1f",
+              "secondary-fixed-dim": "#b2c8ed",
+              "tertiary-fixed-dim": "#b7c4ff",
+              "on-error-container": "#93000a",
+              "surface-dim": "#d6dade",
+              "outline": "#737782",
+              "surface-bright": "#f6fafe",
+              "on-secondary-fixed": "#021c39",
+              "primary-container": "#1b4f9b",
+              "primary-fixed-dim": "#acc7ff",
+              "on-tertiary": "#ffffff",
+              "primary": "#00387a",
+              "error-container": "#ffdad6",
+              "on-secondary-container": "#495e7e",
+              "surface-container-low": "#f0f4f8",
+              "error": "#ba1a1a",
+              "surface-container-lowest": "#ffffff",
+              "secondary": "#4a5f7f",
+              "surface-tint": "#2d5da9",
+              "on-primary": "#ffffff",
+              "on-secondary-fixed-variant": "#324866",
+              "surface-container-highest": "#dfe3e7",
+              "on-surface-variant": "#434751",
+              "secondary-container": "#c2d8fe",
+              "on-primary-container": "#a8c4ff",
+              "tertiary-container": "#0041cd",
+              "outline-variant": "#c3c6d3",
+              "surface-container": "#eaeef2",
+              "tertiary": "#002e98",
+              "tertiary-fixed": "#dce1ff",
+              "on-tertiary-fixed": "#001551",
+              "on-error": "#ffffff",
+              "on-secondary": "#ffffff",
+              "on-surface": "#171c1f",
+              "inverse-surface": "#2c3134",
+              "secondary-fixed": "#d4e3ff",
+              "inverse-primary": "#acc7ff",
+              "on-tertiary-fixed-variant": "#0039b5"
+            },
+            fontFamily: {
+              "headline": ["Inter", "sans-serif"],
+              "body": ["Inter", "sans-serif"],
+              "label": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.375rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+            boxShadow: {
+                "ambient": "0px 8px 24px rgba(15, 39, 68, 0.06)"
+            }
+          },
+        },
+      }
+    </script>
     <style>
-        .setup-container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 30px;
-            background: var(--surface-light);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            box-shadow: var(--shadow-xl);
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .fill-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* surface-container-low */
         }
 
-        .setup-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .setup-header h1 {
-            font-size: 2.5rem;
-            background: var(--grad-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-
-        .setup-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }
-
-        .wizard-steps {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-            position: relative;
-        }
-
-        .wizard-steps::before {
-            content: '';
-            position: absolute;
-            top: 20px;
-            left: 50px;
-            right: 50px;
-            height: 2px;
-            background: var(--border-color);
-            z-index: 1;
-        }
-
-        .step-indicator {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100px;
-        }
-
-        .step-number {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--surface);
-            border: 2px solid var(--border-color);
-            display: flex;
+        /* Functional Styles from File 1 */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(246, 250, 254, 0.85); /* surface 85% opacity */
+            backdrop-filter: blur(12px);
+            z-index: 9999;
             align-items: center;
             justify-content: center;
+        }
+        .loading-overlay.active { display: flex; }
+        .loader {
+            width: 48px; height: 48px;
+            border: 3px solid #e4e9ed; /* surface-container-high */
+            border-top-color: #00387a; /* primary */
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .toast {
+            position: fixed;
+            top: 24px; right: 24px;
+            z-index: 10000;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 14px;
             font-weight: 600;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .step-indicator.active .step-number {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-            box-shadow: 0 0 15px rgba(255, 107, 107, 0.4);
-        }
-
-        .step-indicator.completed .step-number {
-            background: var(--success);
-            border-color: var(--success);
-            color: white;
-        }
-
-        .step-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .step-indicator.active .step-label {
-            color: var(--text-main);
-        }
-
-        .wizard-content {
-            margin-bottom: 30px;
-            min-height: 300px;
-        }
-
-        .wizard-step {
+            box-shadow: 0px 8px 24px rgba(15, 39, 68, 0.06); /* ambient shadow */
             display: none;
-            animation: fadeIn 0.5s ease;
         }
+        .toast.active { display: flex; align-items: center; gap: 8px; }
+        .toast.success { background: #008744; color: white; }
+        .toast.error { background: #ba1a1a; color: white; }
+        .toast.warning { background: #f59e0b; color: white; }
 
-        .wizard-step.active {
-            display: block;
-        }
+        .wizard-step { display: none; }
+        .wizard-step.active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        .dept-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 16px;
-            margin-top: 20px;
-        }
-
-        .dept-card {
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .dept-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-            background: rgba(255, 107, 107, 0.05);
-        }
-
+        /* Dept Card selection logic styles */
         .dept-card.selected {
-            border-color: var(--primary);
-            background: linear-gradient(135deg, rgba(255, 107, 107, 0.1), rgba(255, 78, 80, 0.1));
-            box-shadow: 0 8px 16px rgba(255, 107, 107, 0.15);
+            background-color: #ebf2ff;
+            border-color: #1b4f9b !important;
+            border-width: 2px !important;
+        }
+        
+        /* Clinical Precision: No 1px solid borders for sectioning */
+        .ghost-border {
+            border: 1px solid rgba(195, 198, 211, 0.15); /* outline-variant 15% */
         }
 
-        .dept-icon {
-            font-size: 2rem;
-            margin-bottom: 12px;
-            display: block;
-        }
-
-        .dept-name {
-            font-weight: 600;
-            display: block;
-        }
-
-        .capacity-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .capacity-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            background: var(--surface);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-        }
-
-        .capacity-info {
+        /* Sidebar Styles */
+        .sidebar-nav-item {
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .capacity-item input {
-            width: 100px;
-            text-align: center;
-            padding: 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border-color);
-            background: var(--surface-light);
-            color: var(--text-main);
+            padding: 14px 20px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
             font-weight: 600;
+            transition: all 0.2s ease;
+            cursor: default;
         }
-
-        .wizard-footer {
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid var(--border-color);
-            padding-top: 20px;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .sidebar-nav-item.active {
+            color: white;
+            background: #2A4E7D;
+            border-left: 4px solid #3b82f6;
         }
     </style>
 </head>
-<body class="dark-theme">
+<body class="text-on-surface antialiased bg-surface-container-low">
+
+    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loader"></div>
     </div>
 
+    <!-- Toast -->
     <div id="toast" class="toast"></div>
 
-    <div class="setup-container">
-        <div class="setup-header">
-            <h1>Welcome to HospiSync</h1>
-            <p>Let's configure your hospital's departments and bed capacity.</p>
+    <!-- Sidebar Navigation -->
+    <aside class="w-72 bg-[#1E3A5F] text-white hidden lg:flex flex-col fixed top-0 bottom-0 left-0 z-50">
+        <div class="p-8 pb-10">
+            <div class="flex items-center gap-3">
+                <span class="w-8 h-8 bg-primary-container rounded-lg flex items-center justify-center">
+                    <span class="material-icons text-white text-lg">health_and_safety</span>
+                </span>
+                <span class="text-xl font-black tracking-tight">HospiSync</span>
+            </div>
+            <p class="text-[9px] text-white/40 font-black uppercase tracking-[0.2em] mt-6">Administrative Node</p>
         </div>
 
-        <div class="wizard-steps">
-            <div class="step-indicator active" id="step1-indicator">
-                <div class="step-number">1</div>
-                <div class="step-label">Departments</div>
+        <nav class="flex-1 px-4 space-y-1">
+            <div class="sidebar-nav-item active step-indicator" id="step1-nav">
+                <span class="material-icons text-lg">category</span>
+                <span>Select Departments</span>
             </div>
-            <div class="step-indicator" id="step2-indicator">
-                <div class="step-number">2</div>
-                <div class="step-label">Capacities</div>
+            <div class="sidebar-nav-item step-indicator" id="step2-nav">
+                <span class="material-icons text-lg">straighten</span>
+                <span>Define Capacities</span>
             </div>
-            <div class="step-indicator" id="step3-indicator">
-                <div class="step-number">3</div>
-                <div class="step-label">Finish</div>
+            <div class="sidebar-nav-item step-indicator" id="step3-nav">
+                <span class="material-icons text-lg">medical_services</span>
+                <span>Add Medical Team</span>
             </div>
-        </div>
+            <div class="sidebar-nav-item step-indicator" id="step4-nav">
+                <span class="material-icons text-lg">check_circle</span>
+                <span>Review & Finish</span>
+            </div>
+        </nav>
 
-        <div class="wizard-content">
-            <!-- Step 1: Dept Selection -->
-            <div class="wizard-step active" id="step1">
-                <h3>Select Hospital Departments</h3>
-                <p>Choose the specialized departments currently functional in your hospital.</p>
-                <div class="dept-grid" id="deptGrid">
-                    <!-- Loaded dynamically -->
+        <div class="p-8 border-t border-white/5">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-xs font-bold">AD</div>
+                <div>
+                    <p class="text-xs font-bold">Administrator</p>
+                    <p class="text-[9px] text-white/40 uppercase tracking-widest font-bold">Secure Setup</p>
                 </div>
-                
-                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
-                    <h4 style="margin-bottom: 12px; color: var(--text-muted);">+ Add Custom Department</h4>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="text" id="customDeptName" placeholder="e.g. Dialysis" style="flex: 1; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); background: var(--surface); color: var(--text-main);">
-                        <button class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-xl transition-all active:scale-95" onclick="addCustomDepartment()">Add</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Top Bar -->
+    <header class="h-16 lg:ml-72 fixed top-0 right-0 left-0 z-40 bg-white/80 backdrop-blur-md flex justify-between items-center px-8 border-b border-surface-container">
+        <div class="flex items-center gap-2">
+            <span class="text-sm font-bold text-on-surface uppercase tracking-widest">Configuration Wizard</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span class="text-[10px] font-black text-on-surface-variant uppercase tracking-widest">Live Sync Alpha</span>
+        </div>
+    </header>
+
+    <main class="lg:ml-72 pt-24 pb-12 px-6 flex justify-center min-h-screen">
+        <div class="w-full max-w-[720px]">
+            <!-- Progress Indicator -->
+            <div class="mb-10 px-4">
+                <div class="flex items-center justify-between relative">
+                    <!-- Progress Line -->
+                    <div class="absolute top-1/2 left-0 w-full h-0.5 bg-surface-container -translate-y-1/2 z-0"></div>
+                    
+                    <!-- Step 1 -->
+                    <div class="relative z-10 flex flex-col items-center gap-2 step-indicator active" id="step1-indicator">
+                        <div class="step-circle w-10 h-10 rounded-full bg-primary flex items-center justify-center ring-4 ring-white shadow-sm transition-all">
+                            <span class="text-white text-sm font-bold">1</span>
+                        </div>
+                        <span class="text-xs font-bold text-primary">Departments</span>
+                    </div>
+
+                    <!-- Step 2 -->
+                    <div class="relative z-10 flex flex-col items-center gap-2 step-indicator" id="step2-indicator">
+                        <div class="step-circle w-10 h-10 rounded-full bg-white border-2 border-outline-variant flex items-center justify-center ring-4 ring-white transition-all">
+                            <span class="text-outline text-sm font-bold">2</span>
+                        </div>
+                        <span class="text-xs font-medium text-outline">Capacities</span>
+                    </div>
+
+                    <!-- Step 3 -->
+                    <div class="relative z-10 flex flex-col items-center gap-2 step-indicator" id="step3-indicator">
+                        <div class="step-circle w-10 h-10 rounded-full bg-white border-2 border-outline-variant flex items-center justify-center ring-4 ring-white transition-all">
+                            <span class="text-outline text-sm font-bold">3</span>
+                        </div>
+                        <span class="text-xs font-medium text-outline">Doctors</span>
+                    </div>
+
+                    <!-- Step 4 -->
+                    <div class="relative z-10 flex flex-col items-center gap-2 step-indicator" id="step4-indicator">
+                        <div class="step-circle w-10 h-10 rounded-full bg-white border-2 border-outline-variant flex items-center justify-center ring-4 ring-white transition-all">
+                            <span class="text-outline text-sm font-bold">4</span>
+                        </div>
+                        <span class="text-xs font-medium text-outline">Finish</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Step 2: Capacity Entry -->
-            <div class="wizard-step" id="step2">
-                <h3>Set Bed Capacities</h3>
-                <p>Provide the total number of beds available in each selected department.</p>
-                <div class="capacity-grid" id="capacityGrid">
-                    <!-- Linked to selection -->
+            <!-- Main Wizard Card -->
+            <div class="bg-surface-container-lowest rounded-xl shadow-ambient overflow-hidden border border-outline-variant/10">
+                
+                <div class="p-8 md:p-10">
+                    
+                    <!-- Step 1: Dept Selection -->
+                    <div class="wizard-step active" id="step1">
+                        <header class="mb-6">
+                            <h1 class="text-2xl font-extrabold text-on-surface tracking-tight">Select Clinical Units</h1>
+                            <p class="text-on-surface-variant mt-1 text-sm">Configure the active clinical areas for specialized load forecasting.</p>
+                        </header>
+
+                        <!-- Info Banner -->
+                        <div class="bg-secondary-fixed/30 p-4 rounded-lg flex items-start gap-3 mb-8">
+                            <span class="material-symbols-outlined text-primary text-xl">info</span>
+                            <div>
+                                <p class="text-sm font-bold text-on-secondary-fixed-variant mb-1">How many beds in total?</p>
+                                <p class="text-xs text-on-secondary-fixed-variant/80 leading-relaxed">
+                                    If you want to enter the <b>total number of beds</b> for your hospital, simply keep "General Ward" selected. You can add more specific units like ICU for better forecasting precision later.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Department Grid -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-10" id="deptGrid">
+                            <!-- Populated by setup.js: renderDeptGrid() -->
+                        </div>
+
+                        <!-- Manual Unit Registration -->
+                        <div class="mt-8 pt-6 border-t border-surface-container">
+                            <h4 class="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mb-4">Manual Unit Registration</h4>
+                            <div class="flex items-center gap-3 p-4 bg-surface-container-low rounded-lg">
+                                <div class="flex-1">
+                                    <input class="w-full bg-white border border-outline-variant rounded-md py-2.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="Enter department name (e.g. Dialysis)..." type="text" id="customDeptName"/>
+                                </div>
+                                <button class="bg-primary hover:bg-primary-container text-white text-sm font-bold px-6 py-2.5 rounded-md transition-all flex items-center gap-2 group" onclick="addCustomDepartment()">
+                                    <span class="material-icons text-lg">add</span>
+                                    <span>Add Department</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Capacity Entry -->
+                    <div class="wizard-step" id="step2">
+                        <header class="mb-8">
+                            <h1 class="text-2xl font-extrabold text-on-surface tracking-tight">Allocate Operational Capacity</h1>
+                            <p class="text-on-surface-variant mt-1 text-sm">Define the bed-level resource constraints for each clinical unit.</p>
+                        </header>
+
+                        <div class="space-y-4 mb-10" id="capacityGrid">
+                            <!-- Populated by setup.js: renderCapacityGrid() -->
+                        </div>
+                    </div>
+
+                    <!-- Step 3: Add Doctors -->
+                    <div class="wizard-step" id="step3">
+                        <header class="mb-6">
+                            <h1 class="text-2xl font-extrabold text-on-surface tracking-tight">Add Your Medical Team</h1>
+                            <p class="text-on-surface-variant mt-1 text-sm">Register the doctors available at your hospital. You can add more later.</p>
+                        </header>
+
+                        <!-- Info Banner -->
+                        <div class="bg-[#eef2fa] border border-[#d2dcf0] p-4 rounded-lg flex items-start gap-3 mb-8">
+                            <span class="material-icons text-[#00387a] text-xl">info</span>
+                            <div>
+                                <p class="text-xs text-[#1b2b41] leading-relaxed">
+                                    Adding at least one doctor per department ensures your hospital appears in transfer recommendations. Hospitals without doctors are excluded from recommendations.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Add Doctor Form -->
+                        <form id="addDoctorForm" onsubmit="addDoctorSetup(event)" class="bg-surface-container-low p-5 rounded-xl border border-outline-variant/20 mb-8">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Doctor Name *</label>
+                                    <input type="text" id="docName" required class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="e.g. Dr. Priya Sharma">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Speciality *</label>
+                                    <select id="docSpeciality" required class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                        <!-- Populated via renderDoctorSpecialityOptions() -->
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Qualification</label>
+                                    <input type="text" id="docQualification" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="e.g. MBBS MD">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Phone Number</label>
+                                    <input type="tel" id="docPhone" oninput="this.value = this.value.replace(/[^0-9]/g, '')" maxlength="10" title="Please enter a valid 10-digit phone number" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="e.g. 9876543210">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Experience Years</label>
+                                    <input type="number" id="docExperience" min="0" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="0">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Safe Patient Limit</label>
+                                    <input type="number" id="docSafeLimit" min="1" value="12" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="12">
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-5">
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Shift Start</label>
+                                    <input type="time" id="docShiftStart" value="08:00" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Shift End</label>
+                                    <input type="time" id="docShiftEnd" value="16:00" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Work Days</label>
+                                    <input type="text" id="docWorkDays" value="MON,TUE,WED,THU,FRI" placeholder="MON,TUE,WED" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Status</label>
+                                    <select id="docAvailabilityType" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                                        <option value="PRESENT">Present</option>
+                                        <option value="ON_CALL">On Call</option>
+                                        <option value="OFF_DUTY">Off Duty</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="flex justify-end">
+                                <button type="submit" class="bg-primary hover:bg-primary-container text-white text-sm font-bold px-6 py-2.5 rounded-md transition-all flex items-center gap-2 group">
+                                    <span class="material-icons text-lg">add</span>
+                                    <span>Add Doctor</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Added Doctors Grid -->
+                        <div>
+                            <h4 class="text-[10px] font-black text-on-surface-variant uppercase tracking-[0.2em] mb-4">Added Doctors</h4>
+                            <div id="doctorsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: Finish -->
+                    <div class="wizard-step" id="step4">
+                        <div class="text-center py-8 px-6">
+                            <div class="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
+                                <span class="text-4xl text-green-600">✅</span>
+                            </div>
+                            <h3 class="text-2xl font-extrabold text-on-surface tracking-tight mb-2">Your hospital is ready!</h3>
+                            <p class="text-on-surface-variant text-sm mb-8 max-w-sm mx-auto">
+                                Setup is complete. Here's a summary of your configuration:
+                            </p>
+                            
+                            <div class="bg-surface-container-low rounded-xl p-6 text-left max-w-sm mx-auto shadow-sm border border-outline-variant/20 space-y-4">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-black">✓</div>
+                                    <div><span id="summary-depts" class="font-black text-on-surface text-lg">0</span> <span class="text-sm text-on-surface-variant">Departments configured</span></div>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-black">✓</div>
+                                    <div><span id="summary-beds" class="font-black text-on-surface text-lg">0</span> <span class="text-sm text-on-surface-variant">Total beds added</span></div>
+                                </div>
+                                <div class="flex items-center gap-3" id="summary-doctors-container">
+                                    <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-700 font-black">✓</div>
+                                    <div><span id="summary-doctors" class="font-black text-on-surface text-lg">0</span> <span class="text-sm text-on-surface-variant">Doctors registered</span></div>
+                                </div>
+                                
+                                <div class="flex items-start gap-3 hidden bg-amber-50 p-3 rounded border border-amber-200" id="summary-no-doctors-container">
+                                    <div class="mt-0.5 text-amber-500 text-lg">⚠️</div>
+                                    <div class="text-xs text-amber-800"><span class="font-bold block mb-1">No doctors added</span> You will need to add them from the Doctors section to appear in transfer recommendations.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Footer Navigation -->
+                <div class="bg-surface-container px-8 py-6 flex justify-between items-center relative">
+                    <button id="btnPrev" class="text-sm font-bold text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-2 px-4 py-2" onclick="prevStep()" style="visibility: hidden;">
+                        <span class="material-icons text-lg">chevron_left</span> Back
+                    </button>
+                    
+                    <div class="flex items-center gap-4 ml-auto">
+                        <button id="btnSkip" class="hidden text-sm font-bold text-outline hover:text-on-surface transition-colors items-center gap-2 px-4 py-2" onclick="skipStep3()">
+                            Skip for Now
+                        </button>
+                        <button id="btnNext" class="bg-gradient-to-r from-primary to-primary-container text-white px-8 py-3 rounded-md text-sm font-bold shadow-sm hover:shadow-md transition-all active:scale-95 flex items-center gap-3" onclick="nextStep()">
+                            <span id="btnNextText">Continue</span>
+                            <span class="material-icons text-lg" id="btnNextIcon">arrow_forward</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Step 3: Finish -->
-            <div class="wizard-step" id="step3">
-                <div style="text-align: center; padding: 40px 0;">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">🚀</div>
-                    <h3>All Set!</h3>
-                    <p>Your hospital configuration is ready. Once you finish, you can access the full dashboard.</p>
-                </div>
+            <!-- Footer Meta -->
+            <div class="mt-8 text-center">
+                <p class="text-[11px] text-outline uppercase tracking-widest font-semibold">HospiSync Administrative Suite v2.5.0</p>
             </div>
         </div>
-
-        <div class="wizard-footer">
-            <button class="px-8 py-3 bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 font-semibold rounded-xl border border-slate-700 transition-all active:scale-95" id="btnPrev" style="visibility: hidden;" onclick="prevStep()">Back</button>
-            <button class="px-10 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-lg shadow-blue-900/40 transition-all transform hover:scale-105 active:scale-95" id="btnNext" onclick="nextStep()">Continue</button>
-        </div>
-    </div>
+    </main>
 
     <script src="js/api.js"></script>
     <script src="js/setup.js"></script>

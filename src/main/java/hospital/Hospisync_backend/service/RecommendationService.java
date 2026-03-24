@@ -2,6 +2,8 @@ package hospital.Hospisync_backend.service;
 
 import hospital.Hospisync_backend.dto.RecommendationResponse;
 import hospital.Hospisync_backend.dto.SplitAllocation;
+import hospital.Hospisync_backend.model.Doctor;
+import hospital.Hospisync_backend.repository.DoctorRepository;
 import hospital.Hospisync_backend.model.Hospital;
 import hospital.Hospisync_backend.repository.HospitalRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,20 +21,33 @@ public class RecommendationService {
 
     private final HospitalRepository hospitalRepository;
     private final HospitalService hospitalService;
+    private final DoctorRepository doctorRepository;
 
-    private static final double MAX_DISTANCE_KM = 25.0;
+    private static final double MAX_DISTANCE_KM = 50.0;
     private static final double EARTH_RADIUS_KM = 6371.0;
 
     public List<RecommendationResponse> getRecommendations(Long hospitalId, Double maxDistanceKm,
-            Map<String, String> allParams) {
+            String speciality, Map<String, String> allParams) {
+        return getRecommendations(hospitalId, maxDistanceKm, speciality, allParams, null);
+    }
+
+    public List<RecommendationResponse> getRecommendations(Long hospitalId, Double maxDistanceKm,
+            String speciality, Map<String, String> allParams, List<Long> excludeHospitalIds) {
 
         Hospital sourceHospital = hospitalService.getHospital(hospitalId);
         List<Hospital> otherHospitals = hospitalRepository.findAllExcept(hospitalId);
 
+        // FEATURE 4: Never show a hospital that was already tried
+        if (excludeHospitalIds != null && !excludeHospitalIds.isEmpty()) {
+            otherHospitals = otherHospitals.stream()
+                    .filter(h -> !excludeHospitalIds.contains(h.getId()))
+                    .collect(Collectors.toList());
+        }
+
         double limitKm = (maxDistanceKm != null) ? maxDistanceKm : MAX_DISTANCE_KM;
 
         // Extract bed requirements
-        Map<String, Integer> requirements = allParams.entrySet().stream()
+        Map<String, Integer> requirements = allParams != null ? allParams.entrySet().stream()
                 .filter(e -> e.getKey().startsWith("req-"))
                 .filter(e -> {
                     try {
@@ -43,16 +58,18 @@ public class RecommendationService {
                 })
                 .collect(Collectors.toMap(
                         e -> e.getKey().substring(4).trim(),
-                        e -> Integer.parseInt(e.getValue())));
+                        e -> Integer.parseInt(e.getValue()))) : new HashMap<>();
 
-        // If no requirements, return empty to avoid confusing the user
-        if (requirements.isEmpty() && maxDistanceKm == null) {
+        // If no requirements and no distance filter, return empty
+        if (requirements.isEmpty() && maxDistanceKm == null && (speciality == null || speciality.isEmpty())
+                && (excludeHospitalIds == null || excludeHospitalIds.isEmpty())) {
             log.info("No filters selected, returning empty recommendation list for hospital {}", hospitalId);
             return new ArrayList<>();
         }
 
         List<RecommendationResponse> allCandidates = otherHospitals.stream()
-                .map(h -> buildRecommendation(sourceHospital, h, requirements))
+                .map(h -> buildRecommendation(sourceHospital, h, speciality, requirements))
+                .filter(Objects::nonNull)
                 .filter(r -> r.getDistance() <= limitKm)
                 .sorted(Comparator.comparingDouble(RecommendationResponse::getScore).reversed())
                 .collect(Collectors.toList());
@@ -75,6 +92,13 @@ public class RecommendationService {
 
         return allCandidates.stream().limit(10).collect(Collectors.toList());
     }
+
+    /** Convenience method for callers who just want the top hospital, excluding tried ones */
+    public List<RecommendationResponse> getRecommendationsExcluding(Long hospitalId, Double maxDistanceKm,
+            String speciality, List<Long> excludeHospitalIds) {
+        return getRecommendations(hospitalId, maxDistanceKm, speciality, new HashMap<>(), excludeHospitalIds);
+    }
+
 
     private boolean satisfiesAllRequirements(RecommendationResponse rec, Map<String, Integer> requirements) {
 
@@ -152,6 +176,7 @@ public class RecommendationService {
 
     private RecommendationResponse buildRecommendation(Hospital source,
             Hospital target,
+            String speciality,
             Map<String, Integer> requirements) {
 
         double distance = haversine(
@@ -163,43 +188,97 @@ public class RecommendationService {
         int totalAvailableBeds = hospitalService.getAvailableBeds(target);
 
         double occupancyRate = hospitalService.getOccupancyRate(target);
-
         String utilStatus = hospitalService.getUtilizationStatus(occupancyRate);
 
-        // Score calculation: Balanced between proximity and availability
-        // Distance Score: Higher for closer hospitals. Use a smaller floor (0.2) to reward extreme proximity.
-        double distanceScore = 150.0 / (distance + 0.2);
-
-        // Calculate specific requirement matching
-        double reqScore = 0;
-        if (!requirements.isEmpty()) {
+        // FEATURE 5: Strict Bed Filtering (Patient Safety)
+        // Ensure this hospital has at least *some* beds of the requested types.
+        if (requirements != null && !requirements.isEmpty()) {
+            int matchingAvailableBeds = 0;
             for (Map.Entry<String, Integer> req : requirements.entrySet()) {
-                int avail = hospitalService.getAvailableBedsByCategory(target, req.getKey());
-                // Weight specifically requested beds more heavily (2.5 points each)
-                reqScore += avail * 2.5;
+                matchingAvailableBeds += hospitalService.getAvailableBedsByCategory(target, req.getKey());
+            }
+            if (matchingAvailableBeds == 0) {
+                // This hospital has ZERO beds that the user explicitly requested! 
+                // Do not recommend it at all.
+                return null;
             }
         }
 
-        // Availability Score: 0.2 points per other available bed (lower weight for non-requested categories)
-        int requestedAvail = requirements.keySet().stream()
-                .mapToInt(k -> hospitalService.getAvailableBedsByCategory(target, k))
-                .sum();
-        double otherAvailScore = Math.max(0, totalAvailableBeds - requestedAvail) * 0.2;
+        // Doctor availability logic
+        String bestDoctorName = null;
+        String bestDoctorSpeciality = null;
+        Integer doctorRemainingCapacity = null;
+        Integer maxTransferablePatients = totalAvailableBeds;
+        boolean hasDoctor = false;
+        boolean isNearCapacity = false;
+        String capacityWarning = null;
+        double doctorScore = 0;
+        String doctorAvailType = null;
+        String docRespTime = null;
 
-        // Utilization Score: Prefer underutilized hospitals (up to 30% impact)
-        double utilizationScore = (100.0 - occupancyRate) * 0.3;
+        if (speciality != null && !speciality.isEmpty()) {
+            List<Doctor> rawDoctors = doctorRepository.findByHospitalIdAndSpecialityAndIsAvailableTrue(target.getId(),
+                    speciality);
 
-        double score = distanceScore + reqScore + otherAvailScore + utilizationScore;
+            // Filter out OFF_DUTY doctors
+            List<Doctor> availableDoctors = rawDoctors.stream()
+                .filter(d -> !"OFF_DUTY".equals(d.getAvailabilityType()))
+                .collect(java.util.stream.Collectors.toList());
+
+            if (availableDoctors.isEmpty()) {
+                return null; // Filter out if speciality requested but no available/on-shift doctor
+            }
+
+            // Pick the doctor with most remaining capacity
+            Doctor bestDoctor = availableDoctors.stream()
+                    .max(java.util.Comparator.comparingInt(d -> d.getSafeLimit() - d.getCurrentPatientCount()))
+                    .orElse(availableDoctors.get(0));
+
+            hasDoctor = true;
+            String typeBadge = "PRESENT".equals(bestDoctor.getAvailabilityType()) ? "🟢 Present" : 
+                               "ON_CALL".equals(bestDoctor.getAvailabilityType()) ? "🟡 On-Call (30min)" : "";
+            bestDoctorName = bestDoctor.getName() + " (" + bestDoctor.getSpeciality() + ") — " + typeBadge;
+            bestDoctorSpeciality = bestDoctor.getSpeciality();
+            doctorRemainingCapacity = bestDoctor.getSafeLimit() - bestDoctor.getCurrentPatientCount();
+            maxTransferablePatients = Math.min(totalAvailableBeds, Math.max(0, doctorRemainingCapacity));
+            doctorAvailType = bestDoctor.getAvailabilityType();
+            docRespTime = "PRESENT".equals(doctorAvailType) ? "Immediate" : "ON_CALL".equals(doctorAvailType) ? "30 mins" : "N/A";
+
+            // Score formula components: (doctorCapacity * 2) - (doctorLoad * 1)
+            doctorScore = (doctorRemainingCapacity * 2.0) - (bestDoctor.getCurrentPatientCount() * 1.0);
+            
+            if ("PRESENT".equals(bestDoctor.getAvailabilityType())) {
+                doctorScore += 40.0;
+            } else if ("ON_CALL".equals(bestDoctor.getAvailabilityType())) {
+                doctorScore += 20.0;
+            }
+
+            if (doctorRemainingCapacity <= 2) {
+                isNearCapacity = true;
+                capacityWarning = "High workload: " + bestDoctor.getName() + " is near safe limit.";
+            }
+        }
+
+
+        // Balanced scoring formula upgrade
+        // bedScore = availability * 3
+        double bedScore = totalAvailableBeds * 3.0;
+
+        // distanceScore = - (distance * 2)
+        double distanceScore = -(distance * 2.0);
+
+        // utilizationBonus = +15 if hospital is UNDERUTILIZED
+        double utilizationBonus = "UNDERUTILIZED".equals(utilStatus) ? 15.0 : 0.0;
+
+        double score = bedScore + doctorScore + distanceScore + utilizationBonus;
 
         log.info(
-                "Hospital: {} | Dist: {} (Score: {}) | ReqMatch: {} | OtherAvail: {} | Occupancy: {}% (Score: {}) | Total: {}",
+                "Hospital: {} | Beds: {} | DoctorScore: {} | Dist: {} | Utilization: {} | Total: {}",
                 target.getHospitalName(),
-                distance,
-                Math.round(distanceScore * 100.0) / 100.0,
-                Math.round(reqScore * 100.0) / 100.0,
-                Math.round(otherAvailScore * 100.0) / 100.0,
-                Math.round(occupancyRate * 100.0) / 100.0,
-                Math.round(utilizationScore * 100.0) / 100.0,
+                totalAvailableBeds,
+                Math.round(doctorScore * 100.0) / 100.0,
+                Math.round(distance * 100.0) / 100.0,
+                utilStatus,
                 Math.round(score * 100.0) / 100.0);
 
         int travelMinutes = (int) Math.ceil(distance / 40.0 * 60);
@@ -218,6 +297,15 @@ public class RecommendationService {
                 .occupancyRate(Math.round(occupancyRate * 100.0) / 100.0)
                 .utilizationStatus(utilStatus)
                 .score(Math.round(score * 100.0) / 100.0)
+                .availableDoctorName(bestDoctorName)
+                .availableDoctorSpeciality(bestDoctorSpeciality)
+                .doctorRemainingCapacity(doctorRemainingCapacity)
+                .maxTransferablePatients(maxTransferablePatients)
+                .hasDoctor(hasDoctor)
+                .isNearCapacity(isNearCapacity)
+                .capacityWarning(capacityWarning)
+                .doctorAvailabilityType(doctorAvailType)
+                .doctorResponseTime(docRespTime)
                 .build();
     }
 

@@ -67,17 +67,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (registerForm) {
         initMap();
+        initRegistrationValidationListeners();
 
         registerForm.addEventListener('submit', async (e) => {
-
             e.preventDefault();
             await handleRegister();
-
         });
-
     }
 
 });
+
+function initRegistrationValidationListeners() {
+    const requiredIds = ['hospitalName', 'email', 'password', 'govId', 'contactNumber'];
+    const errorEl = document.getElementById('registerError');
+
+    if (!errorEl) return;
+
+    requiredIds.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('input', () => {
+                const allFilled = requiredIds.every(reqId => {
+                    const el = document.getElementById(reqId);
+                    return el && el.value.trim() !== '';
+                });
+
+                if (allFilled) {
+                    errorEl.classList.remove('active');
+                }
+            });
+        }
+    });
+}
 
 /* ===============================
    MAP INITIALIZATION & SEARCH
@@ -235,8 +256,8 @@ function useMyLocation() {
     if (btn) btn.innerHTML = '<span class="animate-spin inline-block">⏳</span> Detecting...';
     if (locationStatus) {
         locationStatus.style.display = 'block';
-        locationStatus.className = "text-xs font-medium px-4 py-2 rounded-lg bg-blue-900/40 border border-blue-500/30 text-blue-200 mb-4 animate-pulse";
-        locationStatus.innerHTML = '<span>📡</span> Detecting your location precisely...';
+        locationStatus.className = "text-xs font-bold px-4 py-3 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 mb-4 animate-pulse text-center";
+        locationStatus.innerHTML = '<span class="text-blue-600">📡</span> Detecting your location precisely...';
     }
 
     if (addressInput) addressInput.value = "📍 Determining location...";
@@ -256,7 +277,8 @@ function useMyLocation() {
             }, 3000);
 
             if (locationStatus) {
-                locationStatus.innerHTML = '<span class="text-green-400">✅ Location detected successfully!</span>';
+                locationStatus.className = "text-xs font-bold px-4 py-3 rounded-lg bg-green-50 border border-green-200 text-green-800 mb-4 text-center";
+                locationStatus.innerHTML = '<span class="text-green-600">✅ Location detected successfully!</span>';
                 showToast("Location detected! Please confirm the address or adjust on the map if needed.", "success");
                 setTimeout(() => {
                     locationStatus.style.display = 'none';
@@ -266,8 +288,8 @@ function useMyLocation() {
         function(err) {
             if (btn) btn.innerHTML = '<span>📍</span> Use My Current Location';
             if (locationStatus) {
-                locationStatus.className = "text-xs font-medium px-4 py-2 rounded-lg bg-red-900/40 border border-red-500/30 text-red-200 mb-4";
-                locationStatus.innerHTML = '<span class="text-red-400">❌ Error: ' + err.message + '. Please pick on map manually.</span>';
+                locationStatus.className = "text-xs font-bold px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-red-800 mb-4 text-center";
+                locationStatus.innerHTML = '<span class="text-red-600">❌ Error: ' + err.message + '. Please pick on map manually.</span>';
             }
             if (addressInput && addressInput.value.includes("Determining")) addressInput.value = "";
             if (searchInput && searchInput.value.includes("Determining")) searchInput.value = "";
@@ -420,12 +442,28 @@ async function handleRegister() {
 
     const errorEl = document.getElementById('registerError');
 
-    if (!fields.hospitalName || !fields.email || !fields.password || !fields.govId) {
+    if (!fields.hospitalName || !fields.email || !fields.password || !fields.govId || !fields.contactNumber) {
 
         errorEl.textContent = 'Please fill in all required fields';
         errorEl.classList.add('active');
         return;
 
+    }
+
+    // Email Validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(fields.email)) {
+        errorEl.textContent = 'Please enter a valid email address';
+        errorEl.classList.add('active');
+        return;
+    }
+
+    // Mobile Number Validation (exactly 10 digits, numeric)
+    const mobileRegex = /^[0-9]{10}$/;
+    if (!mobileRegex.test(fields.contactNumber)) {
+        errorEl.textContent = 'Please enter a valid mobile number';
+        errorEl.classList.add('active');
+        return;
     }
 
     if (fields.password.length < 6) {
@@ -457,24 +495,20 @@ async function handleRegister() {
         const data = await response.json();
 
         if (response.ok && data.token) {
-
             setAuth(data);
-
             showToast('Hospital registered successfully!', 'success');
-
             setTimeout(() => {
-
                 window.location.href = '/setup.html';
-
             }, 500);
-
         } else {
+            let errorMsg = data.error || 'Registration failed';
+            if (errorMsg.includes('Duplicate entry')) {
+                errorMsg = 'This Hospital ID or Email is already registered.';
+            }
 
-            errorEl.textContent = data.error || 'Registration failed';
+            errorEl.textContent = errorMsg;
             errorEl.classList.add('active');
-
-            showToast(data.error || 'Registration failed', 'error');
-
+            showToast(errorMsg, 'error');
         }
 
     } catch (err) {
