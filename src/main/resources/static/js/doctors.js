@@ -126,7 +126,14 @@ function createDoctorCard(doc) {
         limitColor = 'text-warning';
     }
 
-    div.className = `bg-white p-6 rounded-xl shadow-ambient border ${isAtLimit ? 'border-error border-2' : 'border-slate-100'} hover:shadow-bold transition-all relative group`;
+    let cardBgClass = 'bg-white border-slate-100';
+    if (doc.availabilityType === 'ON_CALL') {
+        cardBgClass = 'bg-amber-50/50 border-amber-200';
+    } else if (doc.availabilityType === 'OFF_DUTY') {
+        cardBgClass = 'bg-slate-50 opacity-75 border-slate-200';
+    }
+
+    div.className = `${cardBgClass} p-6 rounded-xl shadow-ambient border ${isAtLimit && doc.availabilityType !== 'OFF_DUTY' ? '!border-error !border-2' : ''} hover:shadow-bold transition-all relative group`;
     
     const specialityColors = {
         'ICU': 'bg-red-100 text-red-700',
@@ -174,10 +181,7 @@ function createDoctorCard(doc) {
                         ${doc.speciality}
                     </span>
                     <p class="text-[10px] text-slate-500 mt-1 font-bold">Shift: ${doc.shiftInfo || 'N/A'}</p>
-                </div>
-                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${specClass}">
-                        ${doc.speciality}
-                    </span>
+                    <p class="text-[9px] text-slate-400 font-medium italic">Auto-managed by scheduler</p>
                 </div>
             </div>
             <button onclick="confirmDelete(${doc.id})" class="text-slate-300 hover:text-error transition-colors p-1">
@@ -251,8 +255,8 @@ async function handleAddDoctor(e) {
         qualification: doctorQualification,
         experienceYears: parseInt(doctorExperience) || 0,
         safeLimit: parseInt(doctorSafeLimit) || 12,
-        shiftStartTime: doctorShiftStartTime + (doctorShiftStartTime.split(':').length === 2 ? ':00' : ''),
-        shiftEndTime: doctorShiftEndTime + (doctorShiftEndTime.split(':').length === 2 ? ':00' : ''),
+        shiftStart: doctorShiftStartTime + (doctorShiftStartTime.split(':').length === 2 ? ':00' : ''),
+        shiftEnd: doctorShiftEndTime + (doctorShiftEndTime.split(':').length === 2 ? ':00' : ''),
         workDays: doctorWorkDays.toUpperCase()
     };
 

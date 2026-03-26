@@ -21,6 +21,7 @@ public class RecommendationResponse {
     private String utilizationStatus;
     private double score;
     private List<SplitAllocation> splitTransferPlan;
+    private String hospitalPhone;
 
     // New Doctor Related Fields
     private String availableDoctorName;

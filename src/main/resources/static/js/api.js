@@ -124,7 +124,7 @@ async function apiRequest(path, options = {}) {
         localStorage.removeItem('triedHospitals');
         localStorage.removeItem('activeTransferSpeciality');
         alert('Your session has expired. Please log in again.');
-        window.location.href = '/index.html';
+        window.location.href = '/login.html';
         return null;
     }
 

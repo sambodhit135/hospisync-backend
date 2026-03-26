@@ -1129,25 +1129,194 @@ async function rejectTransferRequest(transferId) {
     }
 }
 
-async function loadDoctorsForTransfer(transferId) {
+async function pollActiveIncomingTransfers() {
     const token = localStorage.getItem('token');
     if (!token) return;
 
+    try {
+        const response = await fetch('/api/transfer/incoming/active', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!response.ok) return;
+        const transfers = await response.json();
+        renderActiveIncomingPanel(transfers || []);
+    } catch (err) {
+        console.error('pollActiveIncomingTransfers Error:', err);
+    }
+}
+
+function renderActiveIncomingPanel(transfers) {
+    Object.values(stageTimerIntervals).forEach(clearInterval);
+    stageTimerIntervals = {};
+
+    const container = document.getElementById('activeTransferPanel');
+    if (!container) return;
+
+    if (!transfers || transfers.length === 0) {
+        container.innerHTML = `
+        <div style="background:#F0FDF4; border:1px solid #BBF7D0; border-radius:12px;
+                    padding:16px 20px; margin-bottom:16px;
+                    display:flex; align-items:center; gap:12px;">
+            <span style="font-size:20px;">✅</span>
+            <div>
+                <div style="font-size:13px; font-weight:700; color:#166534;">No Active Transfer Requests</div>
+                <div style="font-size:11px; color:#15803d; margin-top:2px;">Live monitoring is ON • checking every 10 seconds</div>
+            </div>
+        </div>`;
+        return;
+    }
+
+    let html = '';
+    transfers.forEach(t => { html += renderStageCard(t); });
+    container.innerHTML = html;
+
+    transfers.forEach(t => {
+        const deadline = t.stage === 'PENDING' ? t.acknowledgeBy : t.confirmBy;
+        if (!deadline) return;
+        startCountdown(t.id, new Date(deadline));
+        if (t.stage === 'ACKNOWLEDGED') loadDoctorsForTransfer(t.id);
+    });
+}
+
+function renderStageCard(t) {
+    const isStage1 = t.stage === 'PENDING';
+    const deadlineStr = isStage1 ? t.acknowledgeBy : t.confirmBy;
+    const deadline = deadlineStr ? new Date(deadlineStr) : null;
+    const remainingMs = deadline ? Math.max(0, deadline - Date.now()) : 0;
+    const remainingSecs = Math.floor(remainingMs / 1000);
+    const m = Math.floor(remainingSecs / 60);
+    const s = remainingSecs % 60;
+    const timeStr = `${m}:${String(s).padStart(2, '0')}`;
+
+    const fromName = t.fromHospital?.hospitalName || 'Unknown Hospital';
+    const patients = t.patientCount || 0;
+    const priority = (t.priority || 'NORMAL').toUpperCase();
+    const priorityBg = priority === 'EMERGENCY' ? '#FEE2E2' : priority === 'CRITICAL' ? '#FEF3C7' : '#F1F5F9';
+    const priorityColor = priority === 'EMERGENCY' ? '#B91C1C' : priority === 'CRITICAL' ? '#B45309' : '#475569';
+    const timerColor = remainingSecs < 30 ? '#B91C1C' : (isStage1 ? '#B45309' : '#1D4ED8');
+    const beds = t.bedAllocations ? Object.entries(t.bedAllocations).map(([k, v]) => `${k}: ${v}`).join(' ') : '';
+    const stageBadge = isStage1 ? 'STAGE 1 • ACKNOWLEDGE' : 'STAGE 2 • ASSIGN DOCTOR';
+
+    const actionsHtml = isStage1 ? `
+        <div style="display:flex; gap:12px; margin-top:16px;">
+            <button onclick="acknowledgeTransferRequest(${t.id})"
+                style="flex:1; padding:12px 16px; background:#004ac6; color:white;
+                       border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">
+                Acknowledge
+            </button>
+            <button onclick="rejectTransferRequest(${t.id})"
+                style="padding:12px 20px; background:white; color:#B91C1C;
+                       border:2px solid #B91C1C; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">
+                Reject
+            </button>
+        </div>` : `
+        <div style="margin-top:16px;">
+            <label style="font-size:12px; font-weight:700; color:#374151; display:block; margin-bottom:8px;">Select Doctor:</label>
+            <select id="doctorSelect_${t.id}"
+                style="width:100%; padding:10px 14px; border:1px solid #E2E8F0; border-radius:10px; margin-bottom:12px; font-size:13px;">
+                <option value="">Loading doctors...</option>
+            </select>
+            <div style="display:flex; gap:12px;">
+                <button onclick="confirmTransferRequest(${t.id})"
+                    style="flex:1; padding:12px 16px; background:#15803D; color:white; border:none; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">
+                    Confirm
+                </button>
+                <button onclick="rejectTransferRequest(${t.id})"
+                    style="padding:12px 20px; background:white; color:#B91C1C; border:2px solid #B91C1C; border-radius:10px; font-size:13px; font-weight:700; cursor:pointer;">
+                    Decline
+                </button>
+            </div>
+        </div>`;
+
+    return `
+    <div id="stageCard_${t.id}"
+         style="background:white; border-radius:14px; border-left:4px solid #004ac6;
+                padding:24px; margin-bottom:16px; box-shadow:0 2px 12px rgba(0,0,0,0.08);">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+            <div style="flex:1;">
+                <span style="background:${priorityBg}; color:${isStage1 ? '#B45309' : '#1D4ED8'};
+                             padding:4px 12px; border-radius:20px; font-size:11px; font-weight:700;
+                             display:inline-block; margin-bottom:10px;">${stageBadge}</span>
+                <div style="font-size:17px; font-weight:800; color:#0F172A; margin-bottom:4px;">From: ${fromName}</div>
+                <div style="font-size:13px; color:#64748B;">${priority} • ${patients} Patients</div>
+                ${beds ? `<div style="font-size:11px; color:#94A3B8; margin-top:4px;">${beds}</div>` : ''}
+            </div>
+            <div style="text-align:center; min-width:80px;">
+                <div style="font-size:11px; font-weight:700; color:#94A3B8;">Time Left</div>
+                <div id="timer_${t.id}" style="font-size:32px; font-weight:900; color:${timerColor}; font-family:monospace;">${timeStr}</div>
+            </div>
+        </div>
+        ${actionsHtml}
+    </div>`;
+}
+
+function startCountdown(transferId, deadline) {
+    const el = document.getElementById(`timer_${transferId}`);
+    if (!el) return;
+    stageTimerIntervals[transferId] = setInterval(() => {
+        const remainingMs = deadline - Date.now();
+        if (remainingMs <= 0) {
+            clearInterval(stageTimerIntervals[transferId]);
+            el.textContent = '0:00';
+            setTimeout(pollActiveIncomingTransfers, 5000);
+            return;
+        }
+        const s = Math.floor(remainingMs / 1000);
+        el.textContent = `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+    }, 1000);
+}
+
+async function acknowledgeTransferRequest(transferId) {
+    const token = localStorage.getItem('token');
+    try {
+        const res = await fetch(`/api/transfer/${transferId}/acknowledge`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+            if (typeof showToast === 'function') showToast('Acknowledged', 'success');
+            pollActiveIncomingTransfers();
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function confirmTransferRequest(transferId) {
+    const token = localStorage.getItem('token');
+    const doctorId = document.getElementById(`doctorSelect_${transferId}`)?.value;
+    try {
+        const res = await fetch(`/api/transfer/${transferId}/confirm`, {
+            method: 'PUT',
+            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify(doctorId ? { doctorId } : {})
+        });
+        if (res.ok) {
+            if (typeof showToast === 'function') showToast('Confirmed', 'success');
+            pollActiveIncomingTransfers();
+        }
+    } catch (e) { console.error(e); }
+}
+
+async function rejectTransferRequest(transferId) {
+    if (typeof updateTransferStatus === 'function') {
+        updateTransferStatus(transferId, 'REJECTED');
+        setTimeout(pollActiveIncomingTransfers, 1000);
+    }
+}
+
+async function loadDoctorsForTransfer(transferId) {
+    const token = localStorage.getItem('token');
+    if (!token) return;
     try {
         const response = await fetch('/api/doctors/available', {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) return;
         const doctors = await response.json();
-        
         const select = document.getElementById(`doctorSelect_${transferId}`);
         if (!select) return;
-        
         select.innerHTML = '<option value="">Select a doctor...</option>' + 
             doctors.map(d => `<option value="${d.id}">${d.name} (${d.speciality || 'General'})</option>`).join('');
-    } catch (e) {
-        console.error('Failed to load doctors:', e);
-    }
+    } catch (e) { console.error(e); }
 }
 
 if (document.readyState === 'loading') {

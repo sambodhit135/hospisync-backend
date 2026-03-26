@@ -176,13 +176,13 @@ public class DoctorService {
         }
         
         try {
-            java.time.format.DateTimeFormatter inputFormat = java.time.format.DateTimeFormatter.ofPattern("HH:mm");
             java.time.format.DateTimeFormatter outputFormat = java.time.format.DateTimeFormatter.ofPattern("h:mm a");
             
-            String startFormatted = java.time.LocalTime.parse(doctor.getShiftStart(), inputFormat).format(outputFormat);
-            String endFormatted = java.time.LocalTime.parse(doctor.getShiftEnd(), inputFormat).format(outputFormat);
+            // LocalTime.parse() handles HH:mm and HH:mm:ss automatically
+            String startFormatted = java.time.LocalTime.parse(doctor.getShiftStart()).format(outputFormat);
+            String endFormatted = java.time.LocalTime.parse(doctor.getShiftEnd()).format(outputFormat);
             
-            return days + ", " + startFormatted + "-" + endFormatted;
+            return days + ", " + startFormatted + " - " + endFormatted;
         } catch (Exception e) {
             return days + ", " + doctor.getShiftStart() + "-" + doctor.getShiftEnd();
         }

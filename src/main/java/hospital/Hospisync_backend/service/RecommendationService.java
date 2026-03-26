@@ -290,6 +290,7 @@ public class RecommendationService {
         return RecommendationResponse.builder()
                 .id(target.getId())
                 .hospitalName(target.getHospitalName())
+                .hospitalPhone(target.getContactNumber())
                 .address(target.getAddress())
                 .distance(Math.round(distance * 10.0) / 10.0)
                 .estimatedTravelTime(travelTime)

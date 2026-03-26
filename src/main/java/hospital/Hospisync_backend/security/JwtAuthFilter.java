@@ -34,6 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 || path.startsWith("/images")
                 || path.equals("/")
                 || path.equals("/index.html")
+                || path.equals("/login.html")
                 || path.equals("/register.html");
     }
 

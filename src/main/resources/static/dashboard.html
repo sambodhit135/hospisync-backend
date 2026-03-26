@@ -82,13 +82,22 @@
     </script>
     
     <style>
+        :root {
+            --bg-main: #f0f4f8;
+            --text-primary: #171c1f;
+            --text-secondary: #434751;
+            --bg-sidebar: #011f4b;
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --hover-bg: #f8fafc;
+        }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .glass-card { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
         .pulse-green { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); animation: pulse 2s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
 
         /* Custom Leaflet Map Styles */
-        #hospital-map { background: #f0f4f8 !important; }
+        #hospital-map { background: var(--bg-main) !important; }
         .leaflet-container { font-family: inherit; }
         
         /* Modal and Overlay */
@@ -96,7 +105,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0, 26, 64, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(8px);
             z-index: 1000;
             align-items: center;
@@ -104,9 +113,9 @@
         }
         .modal-overlay.active { display: flex; }
         .modal {
-            background: rgba(255, 255, 255, 0.9);
+            background: var(--bg-card);
             backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid var(--border-color);
             border-radius: 1rem;
             width: 90%;
             max-width: 520px;
@@ -119,7 +128,7 @@
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(240, 244, 248, 0.9);
+            background: var(--bg-main);
             backdrop-filter: blur(12px);
             z-index: 9999;
             align-items: center;
@@ -131,7 +140,7 @@
         .spinner {
             width: 48px; height: 48px;
             border: 3px solid #e2e8f0;
-            border-top-color: #00387a;
+            border-top-color: var(--text-primary);
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
@@ -158,13 +167,13 @@
     <script src="/js/api.js"></script>
     <script>
         if (!isLoggedIn()) {
-            window.location.href = '/index.html';
+            window.location.href = '/login.html';
         } else if (!isSetupComplete()) {
             window.location.href = '/setup.html';
         }
     </script>
 </head>
-<body class="bg-[#F0F4F8] text-on-surface font-body overflow-x-hidden">
+<body class="bg-[var(--bg-main)] text-[var(--text-primary)] font-body overflow-x-hidden">
 
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
@@ -179,7 +188,7 @@
     <div id="notificationAlertsContainer" class="fixed top-5 right-5 z-[9999] flex flex-col gap-3 max-w-[350px]"></div>
 
     <!-- SideNavBar -->
-    <aside class="sidebar h-screen w-64 fixed left-0 top-0 flex flex-col bg-[#1E3A5F] font-body antialiased text-sm tracking-tight z-[1001] transition-transform duration-300" style="display: flex !important;" id="sidebar">
+    <aside class="sidebar h-screen w-64 fixed left-0 top-0 flex flex-col bg-[var(--bg-sidebar)] font-body antialiased text-sm tracking-tight z-[1001] transition-transform duration-300" style="display: flex !important;" id="sidebar">
         <div class="flex flex-col h-full py-6">
             <div class="px-6 mb-8 flex items-center gap-3">
                 <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
@@ -187,39 +196,43 @@
                 </div>
                 <div>
                     <h2 class="text-lg font-bold text-white tracking-tighter">HospiSync</h2>
-                    <p class="text-[10px] text-slate-400 uppercase tracking-widest font-bold">Clinical Care v1.0</p>
+                    <p class="text-[10px] text-[var(--text-secondary)] uppercase tracking-widest font-bold">Clinical Care v1.0</p>
                 </div>
             </div>
             
             <nav class="flex-1 space-y-1">
-                <button class="nav-item active w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-white/10" data-section="overview" onclick="showSection('overview')">
+                <button class="nav-item active w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-[var(--bg-card)]/10" data-section="overview" onclick="showSection('overview')">
                     <span class="material-symbols-outlined">dashboard</span>
                     <span class="font-semibold">Dashboard</span>
                 </button>
-                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-white/10" data-section="beds" onclick="showSection('beds')">
+                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-[var(--bg-card)]/10" data-section="beds" onclick="showSection('beds')">
                     <span class="material-symbols-outlined">bed</span>
                     <span class="font-semibold">Bed Management</span>
                 </button>
-                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-white/10" onclick="location.href='/doctors.html'">
+                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-[var(--bg-card)]/10" onclick="location.href='/doctors.html'">
                     <span class="material-symbols-outlined">stethoscope</span>
                     <span class="font-semibold">Doctors</span>
                 </button>
-                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-white/10" data-section="forecast" onclick="showSection('forecast')">
+                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-[var(--bg-card)]/10" data-section="forecast" onclick="showSection('forecast')">
                     <span class="material-symbols-outlined">analytics</span>
                     <span class="font-semibold">Load Forecast</span>
                 </button>
                 
-                <div class="px-6 mt-8 mb-2 text-[10px] font-black text-slate-500 uppercase tracking-widest">Operations</div>
+                <div class="px-6 mt-8 mb-2 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Operations</div>
                 
-                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-white/10" data-section="recommend" onclick="showSection('recommend')">
+                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-[var(--bg-card)]/10" data-section="recommend" onclick="showSection('recommend')">
                     <span class="material-symbols-outlined">fact_check</span>
                     <span class="font-semibold">Recommendations</span>
                 </button>
-                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-white/10" data-section="transfer" onclick="showSection('transfer')">
+                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-[var(--bg-card)]/10" data-section="transfer" onclick="showSection('transfer')">
                     <span class="material-symbols-outlined">move_group</span>
-                    <span class="font-semibold">Patient Transfer</span>
+                    <span class="font-semibold">Hospital Transfers</span>
                 </button>
-                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-white/10 relative" data-section="notifications" onclick="showSection('notifications')">
+                <a href="/patient.html" target="_blank" class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-[var(--bg-card)]/10">
+                    <span class="material-symbols-outlined">person_search</span>
+                    <span class="font-semibold">Patient Finder ↗</span>
+                </a>
+                <button class="nav-item w-[calc(100%-16px)] mx-2 px-4 py-2.5 rounded-md flex items-center gap-3 transition-colors text-white/70 hover:text-white hover:bg-[var(--bg-card)]/10 relative" data-section="notifications" onclick="showSection('notifications')">
                     <span class="material-symbols-outlined">notifications</span>
                     <span class="font-semibold">Notifications</span>
                     <span class="absolute right-3 top-1/2 -translate-y-1/2 bg-error text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center" id="navNotifBadge" style="display:none;">0</span>
@@ -227,7 +240,7 @@
             </nav>
             
             <div class="mt-auto px-2">
-                <button class="text-white/60 hover:text-white hover:bg-white/10 rounded-md px-4 py-3 transition-colors flex items-center gap-3 w-full" id="logoutLink">
+                <button class="text-white/60 hover:text-white hover:bg-[var(--bg-card)]/10 rounded-md px-4 py-3 transition-colors flex items-center gap-3 w-full" id="logoutLink">
                     <span class="material-symbols-outlined">logout</span>
                     <span class="font-semibold">Sign Out</span>
                 </button>
@@ -236,48 +249,48 @@
     </aside>
 
     <!-- TopNavBar -->
-    <header class="top-header fixed top-0 right-0 left-0 lg:left-64 h-16 flex items-center z-[1000] bg-white/85 backdrop-blur-md shadow-sm border-b border-slate-100 transition-all duration-300" id="topHeader">
+    <header class="top-header fixed top-0 right-0 left-0 lg:left-64 h-16 flex items-center z-[1000] bg-[var(--bg-card)] backdrop-blur-md shadow-sm border-b border-[var(--border-color)] transition-all duration-300" id="topHeader">
         <div class="flex justify-between items-center px-8 w-full">
             <div class="flex items-center gap-4 flex-1">
-                <button class="lg:hidden p-2 text-slate-600" id="hamburgerBtn" onclick="toggleSidebar()">
+                <button class="lg:hidden p-2 text-[var(--text-secondary)]" id="hamburgerBtn" onclick="toggleSidebar()">
                     <span class="material-symbols-outlined">menu</span>
                 </button>
                 <div class="flex flex-col">
-                    <h2 class="text-lg font-bold text-slate-900 tracking-tight" id="pageTitle">Dashboard</h2>
+                    <h2 class="text-lg font-bold text-[var(--text-primary)] tracking-tight" id="pageTitle">Dashboard</h2>
                     <div class="flex items-center gap-2" id="lastUpdatedBadge">
                         <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span>
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider" id="lastUpdatedText">Loading...</span>
+                        <span class="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-wider" id="lastUpdatedText">Loading...</span>
                     </div>
                 </div>
             </div>
             
             <div class="flex items-center gap-6">
                 <div class="relative w-64 hidden md:block">
-                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm">search</span>
-                    <input class="w-full bg-slate-50 border-none rounded-full py-2 pl-12 pr-4 text-xs focus:ring-1 focus:ring-primary focus:bg-white transition-all outline-none" placeholder="Search data..." type="text" id="searchInput"/>
+                    <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] text-sm">search</span>
+                    <input class="w-full bg-[var(--hover-bg)] border-none rounded-full py-2 pl-12 pr-4 text-xs focus:ring-1 focus:ring-primary focus:bg-[var(--bg-card)] transition-all outline-none" placeholder="Search data..." type="text" id="searchInput"/>
                 </div>
                 
                 <div class="relative">
-                    <button class="material-symbols-outlined text-slate-500 hover:bg-slate-100 rounded-full p-2 transition-all cursor-pointer relative" id="notifBellBtn" onclick="toggleNotifications()">
+                    <button class="material-symbols-outlined text-[var(--text-secondary)] hover:bg-[var(--hover-bg)] rounded-full p-2 transition-all cursor-pointer relative" id="notifBellBtn" onclick="toggleNotifications()">
                         notifications
                         <span class="absolute top-1 right-1 w-4 h-4 bg-error text-white text-[9px] flex items-center justify-center rounded-full font-bold border-2 border-white" id="headerNotifBadge" style="display:none;">0</span>
                     </button>
                     <!-- Notifications Popover (Glassmorphism) -->
                     <div class="absolute top-12 right-0 w-80 glass-card rounded-xl shadow-ambient border border-white/40 overflow-hidden hidden" id="notifPopover">
-                        <div class="p-4 border-b border-slate-100 flex justify-between items-center bg-white/40">
-                            <h4 class="text-xs font-bold uppercase tracking-widest text-slate-900">Notifications</h4>
+                        <div class="p-4 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--bg-card)]/40">
+                            <h4 class="text-xs font-bold uppercase tracking-widest text-[var(--text-primary)]">Notifications</h4>
                             <button class="text-[10px] text-primary font-bold hover:underline" onclick="showSection('notifications')">View All</button>
                         </div>
                         <div class="max-h-80 overflow-y-auto" id="notifPopoverList">
-                            <div class="p-8 text-center text-slate-400 text-xs italic">No new notifications</div>
+                            <div class="p-8 text-center text-[var(--text-secondary)] text-xs italic">No new notifications</div>
                         </div>
                     </div>
                 </div>
                 
-                <div class="flex items-center gap-3 pl-4 border-l border-slate-100" id="profileDisplaySection">
+                <div class="flex items-center gap-3 pl-4 border-l border-[var(--border-color)]" id="profileDisplaySection">
                     <div class="text-right hidden sm:block">
-                        <p class="text-[11px] font-black text-slate-900 uppercase tracking-tighter" id="profileName">Hospital Admin</p>
-                        <p class="text-[9px] text-slate-500 font-bold">Facility Supervisor</p>
+                        <p class="text-[11px] font-black text-[var(--text-primary)] uppercase tracking-tighter" id="profileName">Hospital Admin</p>
+                        <p class="text-[9px] text-[var(--text-secondary)] font-bold">Facility Supervisor</p>
                     </div>
                     <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-primary-container flex items-center justify-center text-white font-bold shadow-sm" id="profileAvatar">H</div>
                 </div>
@@ -292,7 +305,7 @@
         <div class="section section-container" id="section-overview">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                 <div>
-                    <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-1">Operational Overview</h1>
+                    <h1 class="text-3xl font-black text-[var(--text-primary)] tracking-tight mb-1">Operational Overview</h1>
                     <div class="flex items-center gap-3">
                         <span class="flex items-center gap-1.5 px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-wider">
                             <span class="w-1.5 h-1.5 bg-green-600 rounded-full pulse-green"></span>
@@ -313,7 +326,7 @@
                     </div>
                     <div>
                         <h4 class="text-sm font-black text-error uppercase tracking-wider mb-0.5">Critical Capacity Warning</h4>
-                        <p class="text-xs text-slate-600 font-medium" id="capacityAlertMsg">Facility nearing saturation. Distribution protocols recommended.</p>
+                        <p class="text-xs text-[var(--text-secondary)] font-medium" id="capacityAlertMsg">Facility nearing saturation. Distribution protocols recommended.</p>
                     </div>
                 </div>
                 <button class="bg-error text-white px-4 py-2 rounded-lg text-[11px] font-black uppercase tracking-widest hover:brightness-110 shadow-lg shadow-error/20 transition-all active:scale-95" onclick="showSection('recommend')">Redirect Patients</button>
@@ -322,11 +335,11 @@
             <!-- KPI Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10" id="kpiGrid">
                 <!-- Total Beds -->
-                <div class="bg-white p-6 rounded-xl border-l-[3px] border-blue-500 shadow-ambient hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="bg-[var(--bg-card)] p-6 rounded-xl border-l-[3px] border-blue-500 shadow-ambient hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-blue-50 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-500"></div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-3">Total Beds</p>
+                    <p class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.15em] mb-3">Total Beds</p>
                     <div class="flex justify-between items-end relative z-10">
-                        <h2 class="text-3xl font-black text-slate-900 tracking-tighter" id="kpiTotalBeds">—</h2>
+                        <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter" id="kpiTotalBeds">—</h2>
                         <span class="flex items-center gap-1 text-[11px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded" id="kpiTotalDelta">
                             <span class="material-symbols-outlined text-sm">trending_up</span>
                             0
@@ -334,11 +347,11 @@
                     </div>
                 </div>
                 <!-- Occupied Beds -->
-                <div class="bg-white p-6 rounded-xl border-l-[3px] border-error shadow-ambient hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="bg-[var(--bg-card)] p-6 rounded-xl border-l-[3px] border-error shadow-ambient hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-red-50 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-500"></div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-3">Occupied Beds</p>
+                    <p class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.15em] mb-3">Occupied Beds</p>
                     <div class="flex justify-between items-end relative z-10">
-                        <h2 class="text-3xl font-black text-slate-900 tracking-tighter" id="kpiOccupied">—</h2>
+                        <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter" id="kpiOccupied">—</h2>
                         <span class="flex items-center gap-1 text-[11px] font-bold text-error bg-red-50 px-2 py-0.5 rounded" id="kpiOccDelta">
                             <span class="material-symbols-outlined text-sm">trending_up</span>
                             0%
@@ -346,24 +359,24 @@
                     </div>
                 </div>
                 <!-- Available Beds -->
-                <div class="bg-white p-6 rounded-xl border-l-[3px] border-green-500 shadow-ambient hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="bg-[var(--bg-card)] p-6 rounded-xl border-l-[3px] border-green-500 shadow-ambient hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-green-50 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-500"></div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-3">Available Beds</p>
+                    <p class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.15em] mb-3">Available Beds</p>
                     <div class="flex justify-between items-end relative z-10">
-                        <h2 class="text-3xl font-black text-slate-900 tracking-tighter" id="kpiAvailable">—</h2>
-                        <span class="flex items-center gap-1 text-[11px] font-bold text-slate-400 bg-slate-50 px-2 py-0.5 rounded" id="kpiAvailDelta">
+                        <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter" id="kpiAvailable">—</h2>
+                        <span class="flex items-center gap-1 text-[11px] font-bold text-[var(--text-secondary)] bg-[var(--hover-bg)] px-2 py-0.5 rounded" id="kpiAvailDelta">
                             <span class="material-symbols-outlined text-sm">drag_handle</span>
                             Stable
                         </span>
                     </div>
                 </div>
                 <!-- Occupancy Rate -->
-                <div class="bg-white p-6 rounded-xl border-l-[3px] border-purple-500 shadow-ambient hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="bg-[var(--bg-card)] p-6 rounded-xl border-l-[3px] border-purple-500 shadow-ambient hover:shadow-md transition-shadow relative overflow-hidden group">
                     <div class="absolute -right-4 -top-4 w-16 h-16 bg-purple-50 rounded-full opacity-50 group-hover:scale-125 transition-transform duration-500"></div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em] mb-3">Occupancy Rate</p>
+                    <p class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.15em] mb-3">Occupancy Rate</p>
                     <div class="flex justify-between items-end relative z-10">
-                        <h2 class="text-3xl font-black text-slate-900 tracking-tighter" id="kpiOccRate">—%</h2>
-                        <div class="w-12 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter" id="kpiOccRate">—%</h2>
+                        <div class="w-12 h-1.5 bg-[var(--hover-bg)] rounded-full overflow-hidden">
                             <div class="h-full bg-purple-500" style="width: 75%"></div>
                         </div>
                     </div>
@@ -373,16 +386,16 @@
             <!-- Charts & Map Hierarchy -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Bed Occupancy Trend (Main Chart) -->
-                <div class="lg:col-span-2 bg-white p-8 rounded-xl shadow-ambient border border-white">
+                <div class="lg:col-span-2 bg-[var(--bg-card)] p-8 rounded-xl shadow-ambient border border-white">
                     <div class="flex justify-between items-center mb-10">
                         <div>
-                            <h3 class="text-lg font-black text-slate-900 tracking-tight">Bed Occupancy Performance</h3>
-                            <div class="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">
+                            <h3 class="text-lg font-black text-[var(--text-primary)] tracking-tight">Bed Occupancy Performance</h3>
+                            <div class="flex items-center gap-2 text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest mt-1">
                                 <span class="material-symbols-outlined text-xs">analytics</span>
                                 Real-time clinical throughput
                             </div>
                         </div>
-                        <select class="bg-slate-50 border-none rounded-lg text-[10px] font-black uppercase tracking-widest py-2 px-4 focus:ring-1 focus:ring-primary/20 cursor-pointer outline-none" id="timeFilter">
+                        <select class="bg-[var(--hover-bg)] border-none rounded-lg text-[10px] font-black uppercase tracking-widest py-2 px-4 focus:ring-1 focus:ring-primary/20 cursor-pointer outline-none" id="timeFilter">
                             <option value="24h">Last 24 Hours</option>
                             <option value="7d">Last 7 Days</option>
                             <option value="30d">Last 30 Days</option>
@@ -394,8 +407,8 @@
                 </div>
 
                 <!-- Distribution Chart (Side) -->
-                <div class="bg-white p-8 rounded-xl shadow-ambient border border-white flex flex-col h-full">
-                    <h3 class="text-lg font-black text-slate-900 tracking-tight mb-8">Capacity Allocation</h3>
+                <div class="bg-[var(--bg-card)] p-8 rounded-xl shadow-ambient border border-white flex flex-col h-full">
+                    <h3 class="text-lg font-black text-[var(--text-primary)] tracking-tight mb-8">Capacity Allocation</h3>
                     <div class="flex-1 flex flex-col items-center justify-center py-4">
                         <div class="chart-container w-full aspect-square relative">
                             <canvas id="pieChart"></canvas>
@@ -407,20 +420,20 @@
                 </div>
 
                 <!-- Unit breakdown (Full Width / Horizontal focus) -->
-                <div class="lg:col-span-3 bg-white p-8 rounded-xl shadow-ambient border border-white">
+                <div class="lg:col-span-3 bg-[var(--bg-card)] p-8 rounded-xl shadow-ambient border border-white">
                     <div class="flex justify-between items-center mb-8">
                         <div>
-                            <h3 class="text-lg font-black text-slate-900 tracking-tight">Unit breakdown</h3>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Census distribution across specialized units</p>
+                            <h3 class="text-lg font-black text-[var(--text-primary)] tracking-tight">Unit breakdown</h3>
+                            <p class="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest mt-1">Census distribution across specialized units</p>
                         </div>
                         <div class="flex items-center gap-4">
                             <div class="flex items-center gap-2">
                                 <span class="w-3 h-3 bg-error rounded-sm"></span>
-                                <span class="text-[10px] font-bold text-slate-500">Occupied</span>
+                                <span class="text-[10px] font-bold text-[var(--text-secondary)]">Occupied</span>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span class="w-3 h-3 bg-green-500 rounded-sm"></span>
-                                <span class="text-[10px] font-bold text-slate-500">Available</span>
+                                <span class="text-[10px] font-bold text-[var(--text-secondary)]">Available</span>
                             </div>
                         </div>
                     </div>
@@ -430,18 +443,18 @@
                 </div>
 
                 <!-- Regional Map Visualization (Full Width / Base) -->
-                <div class="lg:col-span-3 bg-white p-8 rounded-xl shadow-ambient border border-white">
+                <div class="lg:col-span-3 bg-[var(--bg-card)] p-8 rounded-xl shadow-ambient border border-white">
                     <div class="flex justify-between items-start mb-6">
                         <div>
-                            <h3 class="text-lg font-black text-slate-900 tracking-tight">Regional Network Census</h3>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Geographic load distribution</p>
+                            <h3 class="text-lg font-black text-[var(--text-primary)] tracking-tight">Regional Network Census</h3>
+                            <p class="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest mt-1">Geographic load distribution</p>
                         </div>
-                        <div class="flex items-center gap-3 px-3 py-1.5 bg-slate-50 rounded-full border border-slate-100">
-                            <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Intensity:</span>
+                        <div class="flex items-center gap-3 px-3 py-1.5 bg-[var(--hover-bg)] rounded-full border border-[var(--border-color)]">
+                            <span class="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Intensity:</span>
                             <div class="h-1.5 w-20 bg-gradient-to-r from-green-500 via-yellow-400 to-red-500 rounded-full"></div>
                         </div>
                     </div>
-                    <div id="hospital-map" class="h-96 w-full rounded-xl overflow-hidden shadow-inner border border-slate-100 relative z-10"></div>
+                    <div id="hospital-map" class="h-96 w-full rounded-xl overflow-hidden shadow-inner border border-[var(--border-color)] relative z-10"></div>
                 </div>
             </div>
         </div>
@@ -449,7 +462,7 @@
         <!-- SECTION: BEDS -->
         <div class="section section-container hidden" id="section-beds">
             <div class="flex justify-between items-center mb-8">
-                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Facility Configuration</h1>
+                <h1 class="text-3xl font-black text-[var(--text-primary)] tracking-tight">Facility Configuration</h1>
                 <button class="bg-primary text-white px-6 py-3 rounded-xl text-sm font-bold flex items-center gap-2 shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all active:scale-95" onclick="openAddCategoryModal()">
                     <span class="material-symbols-outlined">add_circle</span>
                     New Bed Unit
@@ -460,11 +473,11 @@
                 <!-- Dynamically populated -->
             </div>
 
-            <div class="bg-white rounded-2xl shadow-ambient overflow-hidden border border-white">
-                <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <div class="bg-[var(--bg-card)] rounded-2xl shadow-ambient overflow-hidden border border-white">
+                <div class="p-8 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--hover-bg)]/50">
                     <div>
-                        <h3 class="text-xl font-black text-slate-900 tracking-tight">Rapid Census Update</h3>
-                        <p class="text-xs text-slate-500 font-medium">Synchronize occupied units for operational forecasting</p>
+                        <h3 class="text-xl font-black text-[var(--text-primary)] tracking-tight">Rapid Census Update</h3>
+                        <p class="text-xs text-[var(--text-secondary)] font-medium">Synchronize occupied units for operational forecasting</p>
                     </div>
                     <div class="flex items-center gap-2 text-[10px] font-black text-primary uppercase tracking-widest border border-primary/20 px-3 py-1.5 rounded-full" id="bedLastUpdated"></div>
                 </div>
@@ -485,26 +498,26 @@
             </div>
 
             <!-- Doctor Load Update -->
-            <div class="bg-white rounded-2xl shadow-ambient overflow-hidden border border-white mt-8">
-                <div class="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
+            <div class="bg-[var(--bg-card)] rounded-2xl shadow-ambient overflow-hidden border border-white mt-8">
+                <div class="p-8 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--hover-bg)]/50">
                     <div>
-                        <h3 class="text-xl font-black text-slate-900 tracking-tight">Doctor Load Update</h3>
-                        <p class="text-xs text-slate-500 font-medium">Manage and review active physician workloads</p>
+                        <h3 class="text-xl font-black text-[var(--text-primary)] tracking-tight">Doctor Load Update</h3>
+                        <p class="text-xs text-[var(--text-secondary)] font-medium">Manage and review active physician workloads</p>
                     </div>
                 </div>
                 <div class="p-8">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[600px]">
                             <thead>
-                                <tr class="border-b border-slate-100">
-                                    <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Doctor</th>
-                                    <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Speciality</th>
-                                    <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">Status / Limit</th>
-                                    <th class="px-4 py-3 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Update Load</th>
+                                <tr class="border-b border-[var(--border-color)]">
+                                    <th class="px-4 py-3 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Doctor</th>
+                                    <th class="px-4 py-3 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Speciality</th>
+                                    <th class="px-4 py-3 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Status / Limit</th>
+                                    <th class="px-4 py-3 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-right">Update Load</th>
                                 </tr>
                             </thead>
                             <tbody id="dashboardDoctorList" class="divide-y divide-slate-50">
-                                <tr><td colspan="4" class="py-8 text-center text-xs text-slate-400">Loading physicians...</td></tr>
+                                <tr><td colspan="4" class="py-8 text-center text-xs text-[var(--text-secondary)]">Loading physicians...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -516,8 +529,8 @@
         <!-- SECTION: FORECAST -->
         <div class="section section-container hidden" id="section-forecast">
             <div class="flex justify-between items-center mb-8">
-                <h1 class="text-3xl font-black text-slate-900 tracking-tight">Predictive Analytics</h1>
-                <button class="px-5 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-700 hover:bg-slate-50 shadow-sm transition-all flex items-center gap-2" onclick="loadForecast()">
+                <h1 class="text-3xl font-black text-[var(--text-primary)] tracking-tight">Predictive Analytics</h1>
+                <button class="px-5 py-2.5 bg-[var(--bg-card)] border border-[var(--border-color)] rounded-xl text-sm font-bold text-[var(--text-primary)] hover:bg-[var(--hover-bg)] shadow-sm transition-all flex items-center gap-2" onclick="loadForecast()">
                     <span class="material-symbols-outlined text-lg">refresh</span>
                     Regenerate Model
                 </button>
@@ -530,8 +543,8 @@
                         <span class="material-symbols-outlined text-4xl animate-pulse">crisis_alert</span>
                     </div>
                     <div>
-                        <h4 class="text-sm font-black text-error uppercase tracking-[0.2em] mb-1" id="warningTitle">CRITICAL SCARCITY PREDICTED</h4>
-                        <p class="text-md text-slate-700 font-bold" id="warningMessage">Patient influx expected to exceed ICU capacity within 12 hours.</p>
+                        <h4 class="text-sm font-black text-error uppercase tracking-[0.2em]" id="warningTitle">CRITICAL SCARCITY PREDICTED</h4>
+                        <p class="text-md text-[var(--text-primary)] font-bold" id="warningMessage">Patient influx expected to exceed ICU capacity within 12 hours.</p>
                     </div>
                 </div>
                 <button class="bg-error text-white px-6 py-3 rounded-xl text-xs font-black uppercase tracking-widest shadow-xl shadow-error/30 hover:scale-105 transition-all" onclick="showSection('recommend')">Engage Transfer Protocols</button>
@@ -546,9 +559,9 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-10">
                 <div class="lg:col-span-1 space-y-8">
-                    <div class="bg-white p-8 rounded-2xl shadow-ambient border border-white text-center">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4">Next 24h Prediction</p>
-                        <h2 class="text-5xl font-black text-slate-900 tracking-tighter mb-2" id="tomorrowForecast">—</h2>
+                    <div class="bg-[var(--bg-card)] p-8 rounded-2xl shadow-ambient border border-white text-center">
+                        <p class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-4">Next 24h Prediction</p>
+                        <h2 class="text-5xl font-black text-[var(--text-primary)] tracking-tighter mb-2" id="tomorrowForecast">—</h2>
                         <p class="text-xs text-primary font-bold">Inbound Admissions</p>
                     </div>
                     <div class="metric-group space-y-4" id="forecastMetrics">
@@ -556,10 +569,10 @@
                     </div>
                 </div>
                 <div class="lg:col-span-3">
-                    <div class="bg-white p-8 rounded-2xl shadow-ambient border border-white h-full">
+                    <div class="bg-[var(--bg-card)] p-8 rounded-2xl shadow-ambient border border-white h-full">
                         <div class="flex justify-between items-center mb-10">
-                            <h3 class="text-lg font-black text-slate-900 tracking-tight">Demand Trajectory</h3>
-                            <div class="flex items-center gap-2 text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                            <h3 class="text-lg font-black text-[var(--text-primary)] tracking-tight">Demand Trajectory</h3>
+                            <div class="flex items-center gap-2 text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest">
                                 <span class="w-2 h-2 bg-primary rounded-full"></span>
                                 Prediction Confidence: 94.2%
                             </div>
@@ -575,22 +588,22 @@
         <!-- SECTION: RECOMMEND -->
         <div class="section section-container hidden" id="section-recommend">
             <div class="mb-10">
-                <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">Network Recommendation Engine</h1>
-                <p class="text-sm text-slate-500 font-medium">Heuristic-based distribution analysis for clinical load balancing.</p>
+                <h1 class="text-3xl font-black text-[var(--text-primary)] tracking-tight mb-2">Network Recommendation Engine</h1>
+                <p class="text-sm text-[var(--text-secondary)] font-medium">Heuristic-based distribution analysis for clinical load balancing.</p>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 <div class="lg:col-span-1">
-                    <div class="bg-white p-8 rounded-2xl shadow-ambient border border-white sticky top-24">
-                        <div class="flex justify-between items-center mb-8 pb-4 border-b border-slate-50">
-                            <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest">Global Filters</h4>
+                    <div class="bg-[var(--bg-card)] p-8 rounded-2xl shadow-ambient border border-white sticky top-24">
+                        <div class="flex justify-between items-center mb-8 pb-4 border-b border-[var(--border-color)]">
+                            <h4 class="text-xs font-black text-[var(--text-primary)] uppercase tracking-widest">Global Filters</h4>
                             <button class="text-[10px] font-black text-error hover:underline" onclick="clearFilters()">RESET</button>
                         </div>
                         
                         <div class="space-y-8">
                             <div>
-                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-3">Radius (Kilometers)</label>
-                                <select id="filter-distance" class="w-full bg-slate-50 border-none rounded-xl py-3 px-4 text-xs font-bold text-slate-700 outline-none focus:ring-1 focus:ring-primary/20">
+                                <label class="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-3">Radius (Kilometers)</label>
+                                <select id="filter-distance" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-3 px-4 text-xs font-bold text-[var(--text-primary)] outline-none focus:ring-1 focus:ring-primary/20">
                                     <option value="">Default (50 km)</option>
                                     <option value="5">Within 5 km</option>
                                     <option value="10">Within 10 km</option>
@@ -600,21 +613,22 @@
                             </div>
 
                             <div>
-                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-3">Specialized Care (Optional)</label>
-                                <select id="filter-speciality" class="w-full bg-slate-50 border-none rounded-xl py-3 px-4 text-xs font-bold text-slate-700 outline-none focus:ring-1 focus:ring-primary/20">
+                                <label class="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-3">Specialized Care (Optional)</label>
+                                <select id="filter-speciality" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-3 px-4 text-xs font-bold text-[var(--text-primary)] outline-none focus:ring-1 focus:ring-primary/20">
                                     <option value="">Any Speciality</option>
-                                    <option value="Cardiology">Cardiology</option>
-                                    <option value="Neurology">Neurology</option>
-                                    <option value="Orthopedics">Orthopedics</option>
-                                    <option value="Pediatrics">Pediatrics</option>
-                                    <option value="General Medicine">General Medicine</option>
+                                    <option value="GENERAL">General Ward</option>
+                                    <option value="CARDIOLOGY">Cardiology</option>
+                                    <option value="NEUROLOGY">Neurology</option>
+                                    <option value="EMERGENCY">Emergency</option>
+                                    <option value="CHILD_CARE">Pediatrics</option>
+                                    <option value="DAYCARE">Daycare</option>
                                     <option value="ICU">ICU Specialist</option>
                                 </select>
                             </div>
 
                             
                             <div>
-                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest block mb-3">Unit Requirements</label>
+                                <label class="text-[9px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-3">Unit Requirements</label>
                                 <div id="multi-bed-requirements" class="space-y-3">
                                     <!-- Dynamic filters -->
                                 </div>
@@ -631,15 +645,15 @@
                 <div class="lg:col-span-3 space-y-8">
                     <div id="smartRecommendationPanel" class="hidden animate-in"></div>
                     
-                    <div class="bg-white rounded-2xl shadow-ambient border border-white overflow-x-auto">
+                    <div class="bg-[var(--bg-card)] rounded-2xl shadow-ambient border border-white overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[800px]">
                             <thead>
-                                <tr class="bg-slate-50/50">
-                                    <th class="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Facility Detail</th>
-                                    <th class="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Proximity</th>
-                                    <th class="px-4 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Available Units</th>
-                                    <th class="px-2 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Expertise</th>
-                                    <th class="px-2 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Actions</th>
+                                <tr class="bg-[var(--hover-bg)]/50">
+                                    <th class="px-4 py-5 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Facility Detail</th>
+                                    <th class="px-4 py-5 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Proximity</th>
+                                    <th class="px-4 py-5 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Available Units</th>
+                                    <th class="px-2 py-5 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Expertise</th>
+                                    <th class="px-2 py-5 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-right">Actions</th>
 
                                 </tr>
                             </thead>
@@ -648,7 +662,7 @@
                                     <td colspan="5" class="px-8 py-24 text-center">
                                         <div class="flex flex-col items-center">
                                             <span class="material-symbols-outlined text-5xl text-slate-200 mb-4 uppercase">explore</span>
-                                            <p class="text-sm font-bold text-slate-400 uppercase tracking-widest">Execute AI search to visualize network facilities.</p>
+                                            <p class="text-sm font-bold text-[var(--text-secondary)] uppercase tracking-widest">Execute AI search to visualize network facilities.</p>
                                         </div>
                                     </td>
                                 </tr>
@@ -666,8 +680,8 @@
 
             <div class="section-header">
                 <div class="flex justify-between items-center mb-10">
-                    <h1 class="text-3xl font-black text-slate-900 tracking-tight">Logistics Management</h1>
-                    <button class="bg-white border border-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm" onclick="loadTransfers()">
+                    <h1 class="text-3xl font-black text-[var(--text-primary)] tracking-tight">Logistics Management</h1>
+                    <button class="bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-primary)] px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-[var(--hover-bg)] transition-all shadow-sm" onclick="loadTransfers()">
                         <span class="material-symbols-outlined text-lg">refresh</span> Refresh
                     </button>
                 </div>
@@ -681,7 +695,7 @@
                 <div id="activeTransferPanel" class="space-y-0"></div>
 
                 <!-- Incoming -->
-                <div class="bg-white rounded-2xl shadow-ambient border border-white overflow-hidden">
+                <div class="bg-[var(--bg-card)] rounded-2xl shadow-ambient border border-white overflow-hidden">
                     <div class="px-8 py-5 bg-primary/5 border-b border-primary/10 flex items-center justify-between">
                         <h3 class="text-sm font-black text-primary uppercase tracking-widest flex items-center gap-2">
                             <span class="material-symbols-outlined text-lg">move_to_inbox</span>
@@ -690,13 +704,13 @@
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50/50 border-b border-slate-100">
+                            <thead class="bg-[var(--hover-bg)]/50 border-b border-[var(--border-color)]">
                                 <tr>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Origin</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Census Load</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Timestamp</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Protocol</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Resolution</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Origin</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Census Load</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Timestamp</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-center">Protocol</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-right">Resolution</th>
                                 </tr>
                             </thead>
                             <tbody id="incomingTransferTable" class="divide-y divide-slate-50">
@@ -707,22 +721,22 @@
                 </div>
 
                 <!-- Outgoing -->
-                <div class="bg-white rounded-2xl shadow-ambient border border-white overflow-hidden">
-                    <div class="px-8 py-5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
-                        <h3 class="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                <div class="bg-[var(--bg-card)] rounded-2xl shadow-ambient border border-white overflow-hidden">
+                    <div class="px-8 py-5 bg-[var(--hover-bg)] border-b border-[var(--border-color)] flex items-center justify-between">
+                        <h3 class="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest flex items-center gap-2">
                             <span class="material-symbols-outlined text-lg">outbox</span>
                             Departure History
                         </h3>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50/50 border-b border-slate-100">
+                            <thead class="bg-[var(--hover-bg)]/50 border-b border-[var(--border-color)]">
                                 <tr>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">UID</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Destination</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest">Volume</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center">Stage</th>
-                                    <th class="px-8 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Time Log</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">UID</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Destination</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest">Volume</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-center">Stage</th>
+                                    <th class="px-8 py-4 text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest text-right">Time Log</th>
                                 </tr>
                             </thead>
                             <tbody id="outgoingTransferTable" class="divide-y divide-slate-50">
@@ -736,11 +750,68 @@
 
         <!-- SECTION: NOTIFICATIONS -->
         <div class="section section-container hidden" id="section-notifications">
-            <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-10">Notification Center</h1>
+            <h1 class="text-3xl font-black text-[var(--text-primary)] tracking-tight mb-10">Notification Center</h1>
             <div id="notificationsList" class="space-y-4">
                 <!-- Populated -->
             </div>
         </div>
+
+        <!-- SECTION: PATIENT ADMISSIONS -->
+        <!--
+        <div class="section section-container hidden" id="section-admissions">
+            <div class="flex justify-between items-center mb-8">
+                <div>
+                    <h1 class="text-3xl font-black text-[var(--text-primary)] tracking-tight mb-1">Patient Admissions</h1>
+                    <p class="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest mt-1">Incoming patient admission requests from the public portal</p>
+                </div>
+                <button class="bg-[var(--bg-card)] border border-[var(--border-color)] text-[var(--text-primary)] px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-[var(--hover-bg)] transition-all shadow-sm" onclick="fetchPatientAdmissions()">
+                    <span class="material-symbols-outlined text-lg">refresh</span> Refresh
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-10">
+                <div class="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-color)] shadow-sm relative overflow-hidden group">
+                    <p class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-3">Total Today</p>
+                    <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter" id="admStatsTotal">0</h2>
+                </div>
+                <div class="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-color)] shadow-sm relative overflow-hidden group">
+                    <p class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-3">Pending</p>
+                    <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter text-amber-600" id="admStatsPending">0</h2>
+                </div>
+                <div class="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-color)] shadow-sm relative overflow-hidden group">
+                    <p class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-3">Confirmed Today</p>
+                    <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter text-green-600" id="admStatsConfirmed">0</h2>
+                </div>
+                <div class="bg-[var(--bg-card)] p-6 rounded-xl border border-[var(--border-color)] shadow-sm relative overflow-hidden group">
+                    <p class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest mb-3">Declined Today</p>
+                    <h2 class="text-3xl font-black text-[var(--text-primary)] tracking-tighter text-red-600" id="admStatsDeclined">0</h2>
+                </div>
+            </div>
+
+            <div class="mt-8 mb-4">
+                <h3 class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">pending_actions</span>
+                    Active Requests
+                </h3>
+            </div>
+
+            <!-- Requests List -->
+            <div id="admissionsRequestsContainer" class="space-y-4">
+                <!-- Dynamically populated -->
+            </div>
+
+            <!-- History Header -->
+            <div class="mt-12 mb-4" id="admHistoryHeader" style="display:none;">
+                <h3 class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-[0.2em] flex items-center gap-2">
+                    <span class="material-symbols-outlined text-sm">history</span>
+                    Recent History
+                </h3>
+            </div>
+
+            <!-- History List -->
+            <div id="admissionsHistoryContainer" class="space-y-4"></div>
+        </div>
+        -->
 
     </main>
 
@@ -749,11 +820,11 @@
     <!-- Transfer Modal -->
     <div class="modal-overlay" id="transferModal">
         <div class="modal">
-            <h3 class="text-xl font-black text-slate-900 tracking-tight mb-8">Execute Patient Requisition</h3>
+            <h3 class="text-xl font-black text-[var(--text-primary)] tracking-tight mb-8">Execute Patient Requisition</h3>
             <div class="space-y-6">
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Destination facility</label>
-                    <input type="text" id="transferHospitalName" readonly class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-sm font-bold text-slate-900 outline-none">
+                    <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-2">Destination facility</label>
+                    <input type="text" id="transferHospitalName" readonly class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] outline-none">
                     <input type="hidden" id="transferToId">
                 </div>
                 <div id="transferValidationError" class="hidden p-4 bg-error/5 border border-error/20 rounded-xl text-error text-xs font-bold">
@@ -761,13 +832,13 @@
                 </div>
                 
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-4">Unit allocation requirements</label>
+                    <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-4">Unit allocation requirements</label>
                     <div id="transferBedTypesContainer" class="grid grid-cols-2 gap-4"></div>
                 </div>
                 
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">Requisition triage priority</label>
-                    <select id="transferPriority" class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-sm font-bold text-slate-900 outline-none">
+                    <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-3">Requisition triage priority</label>
+                    <select id="transferPriority" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] outline-none">
                         <option value="NORMAL">Standard Triage</option>
                         <option value="CRITICAL">Critical Priority</option>
                         <option value="EMERGENCY">🚨 Immediate Life-Safety</option>
@@ -775,12 +846,12 @@
                 </div>
                 
                 <div class="bg-primary/5 p-4 rounded-xl flex justify-between items-center border border-primary/10">
-                    <span class="text-xs font-black text-slate-500 uppercase tracking-widest">Aggregate Transfer Volume</span>
+                    <span class="text-xs font-black text-[var(--text-secondary)] uppercase tracking-widest">Aggregate Transfer Volume</span>
                     <input type="number" id="transferCount" min="0" value="0" readonly class="bg-transparent border-none text-right font-black text-2xl text-primary w-24">
                 </div>
             </div>
             <div class="mt-10 flex gap-4">
-                <button class="flex-1 py-4 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-xl transition-all" onclick="closeTransferModal()">Discard</button>
+                <button class="flex-1 py-4 bg-[var(--hover-bg)] hover:bg-slate-200 text-[var(--text-secondary)] font-bold rounded-xl transition-all" onclick="closeTransferModal()">Discard</button>
                 <button class="flex-2 py-4 bg-gradient-to-r from-primary to-primary-container text-white font-black rounded-xl shadow-xl shadow-primary/20 hover:scale-[1.02] transition-all px-8" onclick="submitTransfer()">Dispatch Request</button>
             </div>
         </div>
@@ -789,15 +860,15 @@
     <!-- Hospital Details Modal -->
     <div class="modal-overlay" id="hospitalDetailsModal">
         <div class="modal max-w-2xl">
-            <h3 class="text-2xl font-black text-slate-900 tracking-tight mb-8 flex items-center gap-3" id="detailHospitalTitle">
+            <h3 class="text-2xl font-black text-[var(--text-primary)] tracking-tight mb-8 flex items-center gap-3" id="detailHospitalTitle">
                 <span class="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center text-primary">🏥</span>
                 Facility Profile
             </h3>
             <div id="hospitalDetailsContent" class="py-6 min-h-[200px]">
                 <!-- Populated -->
             </div>
-            <div class="mt-8 flex gap-4 justify-end pt-6 border-t border-slate-50">
-                <button class="px-6 py-3 bg-slate-100 text-slate-500 font-bold rounded-xl" onclick="closeModal('hospitalDetailsModal')">Dismiss</button>
+            <div class="mt-8 flex gap-4 justify-end pt-6 border-t border-[var(--border-color)]">
+                <button class="px-6 py-3 bg-[var(--hover-bg)] text-[var(--text-secondary)] font-bold rounded-xl" onclick="closeModal('hospitalDetailsModal')">Dismiss</button>
                 <button class="px-8 py-3 bg-gradient-to-r from-primary to-primary-container text-white font-black rounded-xl shadow-xl shadow-primary/20" id="detailTransferBtn">Initiate Transfer →</button>
             </div>
         </div>
@@ -806,24 +877,24 @@
     <!-- Add/Edit Category Modal -->
     <div class="modal-overlay" id="addCategoryModal">
         <div class="modal">
-            <h3 class="text-xl font-black text-slate-900 tracking-tight mb-8">Register Bed Unit</h3>
+            <h3 class="text-xl font-black text-[var(--text-primary)] tracking-tight mb-8">Register Bed Unit</h3>
             <div class="space-y-6">
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Unit designation</label>
-                    <input type="text" id="addCatName" class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-sm font-bold text-slate-900 outline-none border-b-2 border-transparent focus:border-primary transition-all">
+                    <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-2">Unit designation</label>
+                    <input type="text" id="addCatName" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] outline-none border-b-2 border-transparent focus:border-primary transition-all">
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Total operational capacity</label>
-                    <input type="number" id="addCatCapacity" min="1" class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-sm font-bold text-slate-900 outline-none border-b-2 border-transparent focus:border-primary transition-all">
+                    <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-2">Total operational capacity</label>
+                    <input type="number" id="addCatCapacity" min="1" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] outline-none border-b-2 border-transparent focus:border-primary transition-all">
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Unit Visualization (Icon)</label>
-                    <input type="text" id="addCatIcon" maxlength="4" class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-xl text-center outline-none border-b-2 border-transparent focus:border-primary transition-all">
+                    <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-2">Unit Visualization (Icon)</label>
+                    <input type="text" id="addCatIcon" maxlength="4" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-4 px-5 text-xl text-center outline-none border-b-2 border-transparent focus:border-primary transition-all">
                 </div>
             </div>
             <div id="addCatError" class="hidden mt-4 text-xs font-bold text-error"></div>
             <div class="mt-10 flex gap-4">
-                <button class="flex-1 py-4 bg-slate-100 text-slate-400 font-bold rounded-xl" onclick="closeModal('addCategoryModal')">Abort</button>
+                <button class="flex-1 py-4 bg-[var(--hover-bg)] text-[var(--text-secondary)] font-bold rounded-xl" onclick="closeModal('addCategoryModal')">Abort</button>
                 <button class="flex-2 py-4 bg-primary text-white font-black rounded-xl shadow-xl shadow-primary/20 px-10" onclick="submitAddCategory()">Register Unit</button>
             </div>
         </div>
@@ -831,31 +902,31 @@
     
     <div class="modal-overlay" id="editCategoryModal">
         <div class="modal">
-            <h3 class="text-xl font-black text-slate-900 tracking-tight mb-8">Modify Bed Unit</h3>
+            <h3 class="text-xl font-black text-[var(--text-primary)] tracking-tight mb-8">Modify Bed Unit</h3>
             <input type="hidden" id="editCatId">
             <div class="space-y-6">
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Unit designation</label>
-                    <input type="text" id="editCatName" class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-sm font-bold text-slate-900 outline-none border-b-2 border-transparent focus:border-primary transition-all">
+                    <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-2">Unit designation</label>
+                    <input type="text" id="editCatName" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] outline-none border-b-2 border-transparent focus:border-primary transition-all">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Total</label>
-                        <input type="number" id="editCatCapacity" class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-sm font-bold text-slate-900 outline-none">
+                        <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-2">Total</label>
+                        <input type="number" id="editCatCapacity" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] outline-none">
                     </div>
                     <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Occupied</label>
-                        <input type="number" id="editCatOccupied" class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-sm font-bold text-slate-900 outline-none">
+                        <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-2">Occupied</label>
+                        <input type="number" id="editCatOccupied" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-4 px-5 text-sm font-bold text-[var(--text-primary)] outline-none">
                     </div>
                 </div>
                 <div>
-                    <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">Icon</label>
-                    <input type="text" id="editCatIcon" maxlength="4" class="w-full bg-slate-50 border-none rounded-xl py-4 px-5 text-xl text-center outline-none">
+                    <label class="text-[10px] font-black text-[var(--text-secondary)] uppercase tracking-widest block mb-2">Icon</label>
+                    <input type="text" id="editCatIcon" maxlength="4" class="w-full bg-[var(--hover-bg)] border-none rounded-xl py-4 px-5 text-xl text-center outline-none">
                 </div>
             </div>
             <div id="editCatError" class="hidden mt-4 text-xs font-bold text-error"></div>
             <div class="mt-10 flex gap-4">
-                <button class="flex-1 py-4 bg-slate-100 text-slate-400 font-bold rounded-xl" onclick="closeModal('editCategoryModal')">Cancel</button>
+                <button class="flex-1 py-4 bg-[var(--hover-bg)] text-[var(--text-secondary)] font-bold rounded-xl" onclick="closeModal('editCategoryModal')">Cancel</button>
                 <button class="flex-2 py-4 bg-primary text-white font-black rounded-xl shadow-xl shadow-primary/20 px-10" onclick="submitEditCategory()">Commit Updates</button>
             </div>
         </div>
@@ -864,11 +935,11 @@
     <!-- Delete Modal -->
     <div class="modal-overlay" id="deleteCategoryModal">
         <div class="modal">
-            <h3 class="text-xl font-black text-slate-900 tracking-tight mb-6 flex items-center gap-3">
+            <h3 class="text-xl font-black text-[var(--text-primary)] tracking-tight mb-6 flex items-center gap-3">
                 <span class="text-error material-symbols-outlined">delete_forever</span>
                 Delete Resource Unit?
             </h3>
-            <p class="text-sm text-slate-600 font-medium mb-6">Are you sure you want to decommission <strong class="text-slate-900" id="deleteCatName"></strong>?</p>
+            <p class="text-sm text-[var(--text-secondary)] font-medium mb-6">Are you sure you want to decommission <strong class="text-[var(--text-primary)]" id="deleteCatName"></strong>?</p>
             <div class="p-4 bg-amber-50 rounded-xl border border-amber-100 flex gap-4 mb-8">
                 <span class="material-symbols-outlined text-amber-500 text-lg">info</span>
                 <p class="text-[10px] text-amber-700 font-bold uppercase tracking-wider leading-relaxed">This action is permanent and cannot be reversed by system audit protocols.</p>
@@ -876,7 +947,7 @@
             <input type="hidden" id="deleteCatId">
             <div id="deleteCatError" class="hidden mb-6 text-xs font-bold text-error"></div>
             <div class="flex gap-4">
-                <button class="flex-1 py-4 bg-slate-100 text-slate-400 font-bold rounded-xl" onclick="closeModal('deleteCategoryModal')">Cancel</button>
+                <button class="flex-1 py-4 bg-[var(--hover-bg)] text-[var(--text-secondary)] font-bold rounded-xl" onclick="closeModal('deleteCategoryModal')">Cancel</button>
                 <button class="flex-1 py-4 bg-error text-white font-black rounded-xl shadow-xl shadow-error/20" onclick="submitDeleteCategory()">Confirm Delete</button>
             </div>
         </div>
@@ -886,6 +957,7 @@
     <script src="/js/forecast.js"></script>
     <script src="/js/recommend.js"></script>
     <script src="/js/transfer.js"></script>
+    <script src="/js/patient-admissions.js"></script>
 
     <script>
         // Runs every 30 minutes to keep session alive or detect expiry

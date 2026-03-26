@@ -533,7 +533,7 @@ async function handleRegister() {
 function handleLogout() {
 
     clearAuth();
-    window.location.href = '/index.html';
+    window.location.href = '/login.html';
 
 }
 

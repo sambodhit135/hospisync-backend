@@ -50,8 +50,12 @@ public class SecurityConfig {
                                 "/static/**",
                                 "/*.html",
                                 "/css/**",
-                                "/js/**"
+                                "/js/**",
+                                "/api/patient/request",
+                                "/api/patient/request/*/status",
+                                "/api/patient/recommend"
                         ).permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.DELETE, "/api/patient/request/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

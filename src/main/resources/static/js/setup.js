@@ -25,7 +25,7 @@ const SPECIALITIES = [
 
 document.addEventListener('DOMContentLoaded', () => {
     if (!isLoggedIn()) {
-        window.location.href = '/index.html';
+        window.location.href = '/login.html';
         return;
     }
 
@@ -163,8 +163,8 @@ async function addDoctorSetup(event) {
         safeLimit: parseInt(document.getElementById('docSafeLimit').value) || 12,
         shiftStart: document.getElementById('docShiftStart')?.value || '08:00',
         shiftEnd: document.getElementById('docShiftEnd')?.value || '16:00',
-        workDays: document.getElementById('docWorkDays')?.value || 'MON,TUE,WED,THU,FRI',
-        availabilityType: document.getElementById('docAvailabilityType')?.value || 'PRESENT'
+        workDays: Array.from(document.querySelectorAll('.work-day-cb:checked')).map(cb => cb.value).join(',') || 'MON,TUE,WED,THU,FRI',
+        availabilityType: document.querySelector('input[name="docAvailabilityType"]:checked')?.value || 'PRESENT'
     };
     
     try {

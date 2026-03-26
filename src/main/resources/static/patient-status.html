@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Request Status — HospiSync</title>
+    <meta name="description" content="Track your hospital admission request status.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004ac6;
+            --primary-light: #e8f0fe;
+            --bg: #F0F4F8;
+            --card-bg: #FFFFFF;
+            --text-main: #0F172A;
+            --text-sub: #64748B;
+            --border: #E2E8F0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --radius: 12px;
+            --green: #16a34a;
+            --amber: #d97706;
+            --red: #dc2626;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; }
+
+        header {
+            background: white; border-bottom: 1px solid var(--border);
+            padding: 0 24px; height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .logo-text { font-size: 17px; font-weight: 700; color: var(--primary); }
+        .logo-text span { color: var(--text-sub); font-weight: 400; font-size: 14px; margin-left: 4px; }
+
+        .page-wrapper { max-width: 520px; margin: 0 auto; padding: 40px 24px 64px; }
+
+        .status-card {
+            background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+            padding: 32px; text-align: center; margin-bottom: 16px;
+            border: 2px solid transparent; transition: border-color 0.3s;
+        }
+        .status-card.pending { border-color: var(--primary); }
+        .status-card.confirmed { border-color: var(--green); }
+        .status-card.rejected { border-color: var(--red); }
+
+        .status-icon { font-size: 52px; margin-bottom: 12px; }
+        .status-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+        .hospital-label { font-size: 15px; font-weight: 600; color: var(--text-sub); margin-bottom: 20px; }
+
+        /* Timer */
+        .timer-display {
+            font-size: 60px; font-weight: 800; letter-spacing: 2px;
+            color: var(--primary); margin: 8px 0 4px; transition: color 0.5s;
+            font-variant-numeric: tabular-nums;
+        }
+        .timer-display.amber { color: var(--amber); }
+        .timer-display.red { color: var(--red); }
+        .timer-sub { font-size: 13px; color: var(--text-sub); margin-bottom: 12px; }
+
+        /* Info Lines */
+        .info-line { font-size: 14px; color: var(--text-sub); margin-bottom: 8px; line-height: 1.5; }
+        .info-line strong { color: var(--text-main); font-weight: 700; }
+
+        .divider { height: 1px; background: var(--border); margin: 16px 0; }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%; padding: 14px; background: var(--primary); color: white;
+            border: none; border-radius: 10px; font-family: 'Inter', sans-serif;
+            font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s;
+            margin-bottom: 10px;
+        }
+        .btn-primary:hover { background: #003499; }
+        .btn-secondary {
+            width: 100%; padding: 12px; background: white; color: var(--red);
+            border: 1.5px solid var(--red); border-radius: 10px;
+            font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .btn-secondary:hover { background: #fee2e2; }
+        .btn-outline {
+            width: 100%; padding: 12px; background: white; color: var(--primary);
+            border: 1.5px solid var(--primary); border-radius: 10px;
+            font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s; margin-bottom: 10px;
+        }
+        .btn-outline:hover { background: var(--primary-light); }
+
+        /* Next hospital */
+        .next-hospital-card {
+            background: #f8fafc; border: 1.5px solid var(--border);
+            border-radius: 10px; padding: 16px; margin: 16px 0; text-align: left;
+        }
+        .next-hospital-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .next-hospital-card p { font-size: 13px; color: var(--text-sub); }
+
+        /* Polling dot */
+        .polling-indicator { display: flex; align-items: center; justify-content: center;
+            gap: 6px; font-size: 12px; color: var(--text-sub); margin-top: 16px; }
+        .dot { width: 8px; height: 8px; background: var(--primary); border-radius: 50%;
+            animation: pulse 1.5s infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.7); }
+        }
+
+        .loading { text-align: center; padding: 80px 24px; color: var(--text-sub); }
+        .loader { display: inline-block; width: 32px; height: 32px;
+            border: 3px solid var(--border); border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 12px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+<script>
+  // Status tracking removed.
+  // Patient module is finder only.
+  window.location.href = 'patient.html';
+</script>
+
+<div class="page-wrapper">
+    <div id="mainContent">
+        <div class="loading">
+            <div class="loader"></div>
+            <p>Loading request status...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const requestId = localStorage.getItem('patientRequestId');
+    const urgency = localStorage.getItem('selectedUrgency') || 'TODAY';
+    const hospitalName = localStorage.getItem('selectedHospitalName') || 'Hospital';
+
+    let countdownInterval = null, pollInterval = null;
+    let expiresAt = null;
+    let lastStatus = null;
+    let currentStatus = null;
+
+    window.addEventListener('beforeunload', function(e) {
+        if (requestId && currentStatus === 'PENDING') {
+            e.preventDefault();
+            e.returnValue = 'Your request is still pending. Leaving will not cancel it. Are you sure?';
+        }
+    });
+
+    if (!requestId) {
+        window.location.href = '/patient.html';
+    }
+
+    async function pollStatus() {
+        try {
+            const res = await fetch(`/api/patient/request/${requestId}/status`);
+            if (!res.ok) return;
+            const data = await res.json();
+            if (data.status !== lastStatus) {
+                lastStatus = data.status;
+                currentStatus = data.status;
+                expiresAt = data.expiresAt ? new Date(data.expiresAt) : null;
+                renderStatus(data);
+            }
+        } catch (e) { /* silent */ }
+    }
+
+    function renderStatus(data) {
+        const s = data.status;
+        if (s === 'CONFIRMED') { renderConfirmed(data); return; }
+        if (s === 'REJECTED' || s === 'TIMEOUT' || s === 'NO_HOSPITAL_AVAILABLE') { renderRejected(data); return; }
+        if (s === 'CANCELLED') { document.getElementById('mainContent').innerHTML = '<div class="loading"><p>Request cancelled. Redirecting...</p></div>'; setTimeout(() => window.location.href = '/patient.html', 2000); return; }
+        renderPending(data);
+    }
+
+    function renderPending(data) {
+        const urg = data.urgencyLevel || urgency;
+        const hName = data.hospitalName || hospitalName;
+
+        if (urg === 'TODAY' && expiresAt) {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="status-card pending" id="statusCard">
+                    <div class="status-icon">🔴</div>
+                    <div class="status-title">URGENT REQUEST SENT</div>
+                    <div class="hospital-label">${hName}</div>
+                    <div class="timer-display" id="timerDisplay">30:00</div>
+                    <div class="timer-sub">Hospital responding...</div>
+                    <p class="info-line" style="margin-bottom:20px;">If no response, we will suggest the next available hospital.</p>
+                    <button class="btn-secondary" onclick="cancelRequest()">Cancel Request</button>
+                </div>
+                <div class="polling-indicator"><div class="dot"></div> Checking for updates every 30 seconds</div>`;
+            startCountdown();
+        } else if (urg === 'THIS_WEEK') {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="status-card pending">
+                    <div class="status-icon">📋</div>
+                    <div class="status-title">REQUEST SENT</div>
+                    <div class="hospital-label">${hName}</div>
+                    <div style="margin:20px 0;">
+                        <p class="info-line">⏳ <strong>Waiting for confirmation</strong></p>
+                        <p class="info-line">Hospital typically responds within <strong>4–6 hours</strong>.</p>
+                    </div>
+                    <button class="btn-secondary" onclick="cancelRequest()">Cancel Request</button>
+                </div>
+                <div class="polling-indicator"><div class="dot"></div> Checking for updates every 30 seconds</div>`;
+        } else {
+            document.getElementById('mainContent').innerHTML = `
+                <div class="status-card pending">
+                    <div class="status-icon">✅</div>
+                    <div class="status-title">REQUEST SUBMITTED</div>
+                    <div class="hospital-label">${hName}</div>
+                    <div style="margin:20px 0;">
+                        <p class="info-line">Hospital will confirm your appointment within <strong>24 hours</strong>.</p>
+                    </div>
+                    <button class="btn-secondary" onclick="cancelRequest()">Cancel Request</button>
+                </div>
+                <div class="polling-indicator"><div class="dot"></div> Checking for updates every 30 seconds</div>`;
+        }
+    }
+
+    function startCountdown() {
+        if (countdownInterval) clearInterval(countdownInterval);
+        countdownInterval = setInterval(updateTimer, 1000);
+        updateTimer();
+    }
+
+    function updateTimer() {
+        if (!expiresAt) return;
+        const now = new Date();
+        const diff = Math.max(0, Math.floor((expiresAt - now) / 1000));
+        const min = Math.floor(diff / 60).toString().padStart(2, '0');
+        const sec = (diff % 60).toString().padStart(2, '0');
+        const el = document.getElementById('timerDisplay');
+        if (el) {
+            el.textContent = `${min}:${sec}`;
+            el.className = 'timer-display';
+            if (diff < 60) el.classList.add('red');
+            else if (diff < 300) el.classList.add('amber');
+        }
+        if (diff === 0) clearInterval(countdownInterval);
+    }
+
+    function renderConfirmed(data) {
+        clearIntervals();
+        clearPatientStorage();
+        const doc = data.assignedDoctorName ? `<p class="info-line"><strong>${data.assignedDoctorName}</strong></p>` : '';
+        const spec = data.assignedDoctorSpeciality ? `<p class="info-line" style="color:var(--text-sub)">${data.assignedDoctorSpeciality}</p>` : '';
+        const addr = data.hospitalAddress ? `<p class="info-line">📍 ${data.hospitalAddress}</p>` : '';
+        document.getElementById('mainContent').innerHTML = `
+            <div class="status-card confirmed">
+                <div class="status-icon">✅</div>
+                <div class="status-title" style="color:var(--green)">YOUR VISIT IS CONFIRMED!</div>
+                <div class="divider"></div>
+                ${doc}${spec}
+                <p style="color:#64748B; font-size:13px;
+                          margin-top:12px;
+                          padding:10px;
+                          background:#F8FAFC;
+                          border-radius:6px;">
+                  ⚠️ This is not a fixed appointment slot.
+                  Please arrive during OPD hours.
+                  If delayed, contact the hospital directly.
+                </p>
+                <p class="info-line" style="margin-top:12px;font-weight:600;"><strong>${data.hospitalName || hospitalName}</strong></p>
+                ${addr}
+                <p class="info-line" style="margin-top:12px;font-weight:600;">Please arrive as soon as possible.</p>
+            </div>
+            ${(function() {
+                const lat = localStorage.getItem('selectedHospitalLat');
+                const lng = localStorage.getItem('selectedHospitalLng');
+                if (lat && lng) {
+                    const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+                    return `
+                        <a href="${mapsUrl}" target="_blank"
+                           style="display:block; padding:12px; background:#34A853; color:white; text-decoration:none; border-radius:8px; text-align:center; margin-top:12px; font-weight:700;">
+                           🗺️ Get Directions in Google Maps
+                        </a>`;
+                }
+                return '';
+            })()}
+            <button class="btn-outline" style="margin-top:10px;" onclick="window.location.href='/patient.html'">Book Another Request</button>`;
+    }
+
+    function renderRejected(data) {
+        const next = data.nextHospital;
+        let nextHtml = '';
+        if (next) {
+            nextHtml = `
+                <div class="next-hospital-card">
+                    <h4>🔄 Next Available Hospital</h4>
+                    <p><strong>${next.hospitalName}</strong></p>
+                    <p>${next.distanceKm} km &nbsp;|&nbsp; ${next.availableBeds} beds</p>
+                    ${next.availableDoctorName ? `<p>👨‍⚕️ ${next.availableDoctorName}</p>` : ''}
+                </div>
+                <button class="btn-primary" onclick='sendToNext(${JSON.stringify(next)})'>Send Request Here →</button>`;
+        }
+        document.getElementById('mainContent').innerHTML = `
+            <div class="status-card rejected">
+                <div class="status-icon">❌</div>
+                <div class="status-title" style="color:var(--red)">Hospital could not accommodate</div>
+                <div class="hospital-label">${data.hospitalName || hospitalName}</div>
+            </div>
+            ${nextHtml}
+            <button class="btn-outline" onclick="window.location.href='/patient.html'">Search Again</button>`;
+    }
+
+    async function sendToNext(next) {
+        const speciality = localStorage.getItem('selectedSpeciality') || '';
+        const urg = localStorage.getItem('selectedUrgency') || 'TODAY';
+        const lat = parseFloat(localStorage.getItem('patientLat'));
+        const lng = parseFloat(localStorage.getItem('patientLng'));
+
+        // Build new request with updated hospitalsTried
+        const payload = {
+            patientName: 'Patient', // We don't re-collect name here; ideally store it
+            patientPhone: '0000000000',
+            patientAge: 0,
+            conditionDescription: 'Escalated from previous hospital',
+            specialityNeeded: speciality,
+            urgencyLevel: urg,
+            latitude: isNaN(lat) ? null : lat,
+            longitude: isNaN(lng) ? null : lng,
+            hospitalId: next.hospitalId,
+            hospitalName: next.hospitalName
+        };
+
+        // Better UX: take user back to booking form with next hospital pre-filled
+        localStorage.setItem('selectedHospitalId', next.hospitalId);
+        localStorage.setItem('selectedHospitalName', next.hospitalName);
+        localStorage.setItem('selectedDoctorName', next.availableDoctorName || '');
+        localStorage.setItem('selectedDoctorSpeciality', next.availableDoctorSpeciality || '');
+        localStorage.setItem('selectedDistanceKm', next.distanceKm);
+        localStorage.setItem('selectedAvailableBeds', next.availableBeds);
+        window.location.href = '/patient-booking.html';
+    }
+
+    async function cancelRequest() {
+        if (!confirm('Are you sure you want to cancel your request?')) return;
+        try {
+            await fetch(`/api/patient/request/${requestId}`, { method: 'DELETE' });
+        } catch (e) {}
+        clearPatientStorage();
+        window.location.href = '/patient.html';
+    }
+
+    function getDirections(address) {
+        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+        window.open(url, '_blank');
+    }
+
+    function clearIntervals() {
+        if (countdownInterval) clearInterval(countdownInterval);
+        if (pollInterval) clearInterval(pollInterval);
+    }
+
+    function clearPatientStorage() {
+        ['patientRequestId','selectedHospitalId','selectedHospitalName','patientLat','patientLng',
+         'selectedSpeciality','selectedUrgency','selectedDoctorName','selectedDoctorSpeciality',
+         'selectedDistanceKm','selectedAvailableBeds','selectedHospitalAddress'].forEach(k => localStorage.removeItem(k));
+    }
+
+    // Start polling
+    pollStatus();
+    pollInterval = setInterval(pollStatus, 30000);
+</script>
+</body>
+</html>

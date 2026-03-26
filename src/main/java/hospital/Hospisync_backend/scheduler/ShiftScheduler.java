@@ -31,6 +31,11 @@ public class ShiftScheduler {
             
         for (Doctor doctor : allDoctors) {
         
+            // Check for legacy doctors with null shift fields
+            if (doctor.getShiftStart() == null || doctor.getShiftEnd() == null || doctor.getWorkDays() == null) {
+                continue; // Skip doctors without shift configuration
+            }
+            
             // Parse shift times
             LocalTime start = LocalTime.parse(doctor.getShiftStart());
             LocalTime end = LocalTime.parse(doctor.getShiftEnd());
@@ -41,21 +46,31 @@ public class ShiftScheduler {
             // Check if within shift hours
             boolean isShiftTime = now.isAfter(start) && now.isBefore(end);
                 
-            // Only update if not manually set to OFF_DUTY by admin (respect manual overrides)
+            String currentType = (doctor.getAvailabilityType() != null) ? doctor.getAvailabilityType() : "PRESENT";
+            boolean currentAvail = (doctor.getIsAvailable() != null) ? doctor.getIsAvailable() : true;
+            
+            String newType = currentType;
+            boolean newAvail = currentAvail;
+
             if (isWorkDay && isShiftTime) {
-                if (!"OFF_DUTY".equals(doctor.getAvailabilityType())) {
-                    doctor.setAvailabilityType("PRESENT");
-                    doctor.setIsAvailable(true);
+                // Should be PRESENT unless manually set to OFF_DUTY
+                if (!"OFF_DUTY".equals(currentType)) {
+                    newType = "PRESENT";
+                    newAvail = true;
                 }
             } else {
-                // Outside shift — mark off. But respect ON_CALL status
-                if ("PRESENT".equals(doctor.getAvailabilityType())) {
-                    doctor.setAvailabilityType("OFF_DUTY");
-                    doctor.setIsAvailable(false);
+                // Outside shift — only mark OFF_DUTY if they were specifically PRESENT
+                if ("PRESENT".equals(currentType)) {
+                    newType = "OFF_DUTY";
+                    newAvail = false;
                 }
             }
             
-            doctorRepo.save(doctor);
+            if (!newType.equals(currentType) || newAvail != currentAvail) {
+                doctor.setAvailabilityType(newType);
+                doctor.setIsAvailable(newAvail);
+                doctorRepo.save(doctor);
+            }
         }
         
         log.info("Shift check complete. Updated {} doctors", allDoctors.size());

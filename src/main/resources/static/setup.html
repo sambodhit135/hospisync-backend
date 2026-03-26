@@ -371,7 +371,7 @@
                                     <input type="number" id="docSafeLimit" min="1" value="12" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all" placeholder="12">
                                 </div>
                             </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-5">
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-4 mb-5">
                                 <div>
                                     <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Shift Start</label>
                                     <input type="time" id="docShiftStart" value="08:00" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
@@ -381,16 +381,54 @@
                                     <input type="time" id="docShiftEnd" value="16:00" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
                                 </div>
                                 <div>
-                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Work Days</label>
-                                    <input type="text" id="docWorkDays" value="MON,TUE,WED,THU,FRI" placeholder="MON,TUE,WED" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                                </div>
-                                <div>
                                     <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Status</label>
-                                    <select id="docAvailabilityType" class="w-full bg-white border border-outline-variant rounded-md py-2 px-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
-                                        <option value="PRESENT">Present</option>
-                                        <option value="ON_CALL">On Call</option>
-                                        <option value="OFF_DUTY">Off Duty</option>
-                                    </select>
+                                    <div class="flex flex-wrap gap-3 mt-2">
+                                        <label class="flex items-center gap-2 cursor-pointer group">
+                                            <input type="radio" name="docAvailabilityType" value="PRESENT" class="w-4 h-4 text-primary focus:ring-primary/20" checked>
+                                            <span class="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">PRESENT</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer group">
+                                            <input type="radio" name="docAvailabilityType" value="ON_CALL" class="w-4 h-4 text-primary focus:ring-primary/20">
+                                            <span class="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">ON-CALL</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer group">
+                                            <input type="radio" name="docAvailabilityType" value="OFF_DUTY" class="w-4 h-4 text-primary focus:ring-primary/20">
+                                            <span class="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">OFF-DUTY</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-span-1 sm:col-span-2">
+                                    <label class="block text-[10px] font-black text-on-surface-variant uppercase tracking-widest mb-1">Work Days</label>
+                                    <div class="flex flex-wrap gap-1" id="docWorkDaysContainer">
+                                        <label class="cursor-pointer">
+                                            <input type="checkbox" value="MON" class="work-day-cb peer sr-only" checked>
+                                            <div class="px-2 py-1.5 rounded transition-all text-[11px] font-bold border border-outline-variant text-on-surface-variant peer-checked:bg-primary-container peer-checked:text-white peer-checked:border-primary">Mon</div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="checkbox" value="TUE" class="work-day-cb peer sr-only" checked>
+                                            <div class="px-2 py-1.5 rounded transition-all text-[11px] font-bold border border-outline-variant text-on-surface-variant peer-checked:bg-primary-container peer-checked:text-white peer-checked:border-primary">Tue</div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="checkbox" value="WED" class="work-day-cb peer sr-only" checked>
+                                            <div class="px-2 py-1.5 rounded transition-all text-[11px] font-bold border border-outline-variant text-on-surface-variant peer-checked:bg-primary-container peer-checked:text-white peer-checked:border-primary">Wed</div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="checkbox" value="THU" class="work-day-cb peer sr-only" checked>
+                                            <div class="px-2 py-1.5 rounded transition-all text-[11px] font-bold border border-outline-variant text-on-surface-variant peer-checked:bg-primary-container peer-checked:text-white peer-checked:border-primary">Thu</div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="checkbox" value="FRI" class="work-day-cb peer sr-only" checked>
+                                            <div class="px-2 py-1.5 rounded transition-all text-[11px] font-bold border border-outline-variant text-on-surface-variant peer-checked:bg-primary-container peer-checked:text-white peer-checked:border-primary">Fri</div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="checkbox" value="SAT" class="work-day-cb peer sr-only">
+                                            <div class="px-2 py-1.5 rounded transition-all text-[11px] font-bold border border-outline-variant text-on-surface-variant peer-checked:bg-primary-container peer-checked:text-white peer-checked:border-primary">Sat</div>
+                                        </label>
+                                        <label class="cursor-pointer">
+                                            <input type="checkbox" value="SUN" class="work-day-cb peer sr-only">
+                                            <div class="px-2 py-1.5 rounded transition-all text-[11px] font-bold border border-outline-variant text-on-surface-variant peer-checked:bg-primary-container peer-checked:text-white peer-checked:border-primary">Sun</div>
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="flex justify-end">

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HospiSync - Hospital Finder</title>
+    <script>window.location.href = "patient.html";</script>
+    <meta http-equiv="refresh" content="0; url=patient.html">
+    <meta name="description" content="Book a hospital admission request through HospiSync.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #004ac6;
+            --primary-light: #e8f0fe;
+            --primary-dark: #003499;
+            --bg: #F0F4F8;
+            --card-bg: #FFFFFF;
+            --text-main: #0F172A;
+            --text-sub: #64748B;
+            --border: #E2E8F0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.08);
+            --radius: 12px;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text-main); min-height: 100vh; }
+
+        header {
+            background: #FFFFFF; border-bottom: 1px solid var(--border);
+            padding: 0 24px; height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-text { font-size: 17px; font-weight: 700; color: var(--primary); }
+        .logo-text span { color: var(--text-sub); font-weight: 400; font-size: 14px; margin-left: 4px; }
+        .back-link { color: var(--primary); text-decoration: none; font-size: 14px; font-weight: 600; }
+        .back-link:hover { text-decoration: underline; }
+
+        .page-wrapper { max-width: 600px; margin: 0 auto; padding: 32px 24px 64px; }
+        h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+        .page-sub { font-size: 14px; color: var(--text-sub); margin-bottom: 24px; }
+
+        .summary-card {
+            background: var(--primary-light); border: 1.5px solid var(--primary);
+            border-radius: var(--radius); padding: 20px; margin-bottom: 24px;
+        }
+        .summary-card h3 { font-size: 16px; font-weight: 800; color: var(--primary); margin-bottom: 8px; }
+        .summary-row { display: flex; flex-wrap: wrap; gap: 8px 24px; }
+        .summary-item { font-size: 13px; color: var(--text-main); }
+        .summary-item strong { font-weight: 700; }
+
+        .form-card {
+            background: var(--card-bg); border-radius: var(--radius);
+            box-shadow: var(--shadow); padding: 28px;
+        }
+        .field-group { margin-bottom: 20px; }
+        .field-label {
+            font-size: 12px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.06em; color: var(--text-sub); margin-bottom: 6px;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .field-label .required { color: #dc2626; }
+        input[type="text"], input[type="number"], textarea {
+            width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
+            border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px;
+            color: var(--text-main); outline: none; transition: border-color 0.2s;
+            background: white;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); }
+        textarea { resize: vertical; min-height: 90px; }
+
+        .readonly-row {
+            display: flex; gap: 12px; background: #f8fafc;
+            border-radius: 8px; padding: 14px; border: 1px solid var(--border);
+        }
+        .readonly-item { flex: 1; }
+        .readonly-item .rk { font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--text-sub); margin-bottom: 3px; }
+        .readonly-item .rv { font-size: 14px; font-weight: 600; color: var(--text-main); }
+
+        .urg-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 20px;
+        }
+        .urg-today { background: #fee2e2; color: #dc2626; }
+        .urg-week { background: #fef3c7; color: #d97706; }
+        .urg-planned { background: #dcfce7; color: #16a34a; }
+
+        .submit-btn {
+            width: 100%; padding: 15px; background: var(--primary);
+            color: white; border: none; border-radius: 10px;
+            font-family: 'Inter', sans-serif; font-size: 16px; font-weight: 700;
+            cursor: pointer; transition: background 0.2s; margin-top: 8px;
+        }
+        .submit-btn:hover { background: var(--primary-dark); }
+        .submit-btn:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        #errorMsg { color: #dc2626; font-size: 13px; margin-top: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+<script>
+  // Booking flow removed.
+  // Patient module is finder only.
+  window.location.href = 'patient.html';
+</script>
+
+<div class="page-wrapper">
+    <h2>Book Your Admission</h2>
+    <p class="page-sub">Fill in the details below to confirm your request at the selected hospital.</p>
+
+    <!-- Hospital Summary -->
+    <div class="summary-card">
+        <h3 id="summaryHospital">Loading hospital...</h3>
+        <div class="summary-row">
+            <div class="summary-item">👨‍⚕️ <strong id="summaryDoctor">—</strong></div>
+            <div class="summary-item">📍 <strong id="summaryDistance">—</strong> km</div>
+            <div class="summary-item">🛏️ <strong id="summaryBeds">—</strong> beds available</div>
+        </div>
+    </div>
+
+    <!-- Booking Form -->
+    <div class="form-card">
+        <div class="field-group">
+            <label class="field-label" for="patientName">Your Name <span class="required">*</span></label>
+            <input type="text" id="patientName" placeholder="Full name" required>
+        </div>
+        <div class="field-group">
+            <label class="field-label" for="patientPhone">Phone Number <span class="required">*</span></label>
+            <input type="text" id="patientPhone" placeholder="10-digit mobile number" maxlength="10" required>
+        </div>
+        <div class="field-group">
+            <label class="field-label" for="patientAge">Age <span class="required">*</span></label>
+            <input type="number" id="patientAge" placeholder="Your age" min="0" max="130" required>
+        </div>
+        <div class="field-group">
+            <label class="field-label" for="conditionDesc">Describe Your Condition <span class="required">*</span></label>
+            <textarea id="conditionDesc" rows="3"
+                placeholder="Briefly describe your symptoms or reason for visit..."></textarea>
+        </div>
+
+        <div class="field-group" id="timeSlotGroup">
+            <label class="field-label" for="preferredTime">Preferred Visit Time (Optional)</label>
+            <input type="time" id="preferredTime" onchange="checkPreferredTime()">
+            <p style="color:#64748B; font-size:12px; margin-top:6px; margin-bottom:0;">
+                ℹ️ Different hospitals have different OPD timings. The hospital operator will confirm if your preferred time is available.
+            </p>
+            <div id="timeWarning" 
+                 style="display:none; background:#FEF3C7; border-radius:6px; padding:8px 12px; margin-top:8px; font-size:13px;">
+            </div>
+            <p id="shiftDisclaimer" style="font-size: 11px; color: var(--primary); margin-top: 6px; font-weight: 600;"></p>
+        </div>
+
+        <!-- Read-only Pre-fills -->
+        <div class="field-group">
+            <label class="field-label">Pre-filled from Search</label>
+            <div class="readonly-row">
+                <div class="readonly-item">
+                    <div class="rk">Speciality</div>
+                    <div class="rv" id="readonlySpeciality">—</div>
+                </div>
+                <div class="readonly-item">
+                    <div class="rk">Urgency</div>
+                    <div class="rv" id="readonlyUrgency">—</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="submit-btn" id="confirmBtn" onclick="submitBooking()">Confirm Booking Request →</button>
+        <div id="errorMsg"></div>
+    </div>
+</div>
+
+<script>
+    // Load from localStorage
+    const hospitalId = parseInt(localStorage.getItem('selectedHospitalId'));
+    const hospitalName = localStorage.getItem('selectedHospitalName') || 'Unknown Hospital';
+    const doctorName = localStorage.getItem('selectedDoctorName') || 'Any available doctor';
+    const distanceKm = localStorage.getItem('selectedDistanceKm') || '?';
+    const availBeds = localStorage.getItem('selectedAvailableBeds') || '?';
+    const speciality = localStorage.getItem('selectedSpeciality') || '';
+    const urgency = localStorage.getItem('selectedUrgency') || 'TODAY';
+    const patientLat = parseFloat(localStorage.getItem('patientLat'));
+    const patientLng = parseFloat(localStorage.getItem('patientLng'));
+
+    if (!hospitalId) {
+        window.location.href = '/patient.html';
+    }
+
+    // Populate summary
+    document.getElementById('summaryHospital').textContent = '🏥 ' + hospitalName;
+    document.getElementById('summaryDoctor').textContent = doctorName;
+    document.getElementById('summaryDistance').textContent = distanceKm;
+    document.getElementById('summaryBeds').textContent = availBeds;
+
+    function checkPreferredTime() {
+      const timeInput = document.getElementById('preferredTime');
+      const warningDiv = document.getElementById('timeWarning');
+        
+      if (!timeInput || !timeInput.value) {
+        if (warningDiv) warningDiv.style.display = 'none';
+        return;
+      }
+      
+      const hour = parseInt(timeInput.value.split(':')[0]);
+      
+      if (hour < 8 || hour > 18) {
+        warningDiv.style.display = 'block';
+        warningDiv.innerHTML = `
+          <span style="color:#B45309;">
+            ⚠️ You selected a time outside typical hospital hours (8 AM - 6 PM).
+            The hospital operator will confirm if this time is available.
+          </span>`;
+      } else {
+        warningDiv.style.display = 'none';
+      }
+    }
+
+    function formatTimeTo12h(timeStr) {
+        if (!timeStr) return 'N/A';
+        try {
+            const parts = timeStr.split(':');
+            let h = parseInt(parts[0]);
+            const m = parts[1].padStart(2, '0');
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12;
+            h = h ? h : 12;
+            return `${h}:${m} ${ampm}`;
+        } catch (e) { return timeStr; }
+    }
+
+    // Shift info
+    const shiftStart = localStorage.getItem('selectedDoctorShiftStart');
+    const shiftEnd = localStorage.getItem('selectedDoctorShiftEnd');
+    const shiftEl = document.getElementById('shiftDisclaimer');
+    if (shiftStart && shiftEnd) {
+        shiftEl.textContent = `ℹ️ Doctor's Timing: ${formatTimeTo12h(shiftStart)} to ${formatTimeTo12h(shiftEnd)}. Please pick a slot within this range.`;
+        shiftEl.classList.remove('hidden');
+    } else {
+        shiftEl.textContent = `ℹ️ Doctor's Timing: Flexible.`;
+        shiftEl.classList.remove('hidden');
+    }
+
+    // Readonly fields
+    const displaySpeciality = speciality ? speciality.charAt(0).toUpperCase() + speciality.slice(1).toLowerCase() : 'Any Available';
+    document.getElementById('readonlySpeciality').textContent = displaySpeciality;
+    const urgencyLabels = { TODAY: '🔴 Today', THIS_WEEK: '🟡 This Week', PLANNED: '🟢 Planned' };
+    document.getElementById('readonlyUrgency').textContent = urgencyLabels[urgency] || urgency;
+
+    async function submitBooking() {
+        const name = document.getElementById('patientName').value;
+        const phone = document.getElementById('patientPhone').value;
+        const age = parseInt(document.getElementById('patientAge').value);
+        const condition = document.getElementById('conditionDesc').value;
+
+        const hospitalId = localStorage.getItem('selectedHospitalId');
+        const hospitalName = localStorage.getItem('selectedHospitalName');
+        const doctorId = localStorage.getItem('selectedDoctorId');
+        const patientLat = parseFloat(localStorage.getItem('patientLocationLat'));
+        const patientLng = parseFloat(localStorage.getItem('patientLocationLng'));
+        const preferredTime = document.getElementById('preferredTime').value;
+        const errEl = document.getElementById('errorMsg');
+
+        if (!name) { errEl.textContent = 'Please enter your name.'; return; }
+        if (!phone || !/^\d{10}$/.test(phone)) { errEl.textContent = 'Please enter a valid 10-digit phone number.'; return; }
+        if (!age || age < 1) { errEl.textContent = 'Please enter a valid age.'; return; }
+        if (!condition) { errEl.textContent = 'Please describe your condition.'; return; }
+
+        // Ensure warning is up to date before submission (no blocking)
+        checkPreferredTime();
+
+        const btn = document.getElementById('confirmBtn');
+        btn.disabled = true; btn.textContent = 'Sending...'; errEl.textContent = '';
+
+        const payload = {
+            patientName: name,
+            patientPhone: phone,
+            patientAge: age,
+            conditionDescription: condition,
+            specialityNeeded: speciality,
+            urgencyLevel: urgency,
+            latitude: isNaN(patientLat) ? null : patientLat,
+            longitude: isNaN(patientLng) ? null : patientLng,
+            hospitalId: hospitalId,
+            hospitalName: hospitalName,
+            doctorId: doctorId ? parseInt(doctorId) : null,
+            preferredTime: preferredTime
+        };
+
+        try {
+            const res = await fetch('/api/patient/request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const err = await res.json();
+                throw new Error(err.error || 'Failed to book');
+            }
+
+            const data = await res.json();
+            localStorage.setItem('patientRequestId', data.requestId);
+            window.location.href = '/patient-status.html';
+        } catch (e) {
+            errEl.textContent = '❌ ' + e.message;
+            btn.disabled = false;
+            btn.textContent = 'Confirm Booking Request →';
+        }
+    }
+</script>
+</body>
+</html>

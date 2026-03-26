@@ -141,7 +141,7 @@ async function loadDashboard() {
         if (!hospitalId) {
             console.error("Hospital ID missing, dashboard load aborted");
             alert("Session expired or missing hospital ID. Please login again.");
-            window.location.href = "/index.html";
+            window.location.href = "/login.html";
             return;
         }
 
